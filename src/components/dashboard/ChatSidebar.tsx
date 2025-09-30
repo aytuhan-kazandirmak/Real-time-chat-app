@@ -13,7 +13,7 @@ export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"chats" | "friends">("chats");
   return (
-    <div className="w-80 h-full max-h-screen border-r bg-background">
+    <div className="w-80 min-h-screen border-r bg-background relative">
       {/* search input */}
       <div className="p-4 border-b">
         <div className="flex items-center gap-2 mb-4">
@@ -57,7 +57,7 @@ export default function ChatSidebar() {
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden border-b">
-        <ScrollArea className="h-[460px]">
+        <ScrollArea className="h-[450px]">
           {activeTab === "chats"
             ? mockChats.map((chat) => <ChatCard key={chat.id} chat={chat} />)
             : mockFriends.map((friend) => (
@@ -66,7 +66,7 @@ export default function ChatSidebar() {
         </ScrollArea>
       </div>
 
-      <div className="p-3">
+      <div className="px-3 fixed bottom-0 w-full h-[84px]">
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 h-auto p-3"

@@ -1,4 +1,4 @@
-import type { Chat, Friend, User } from "@/types";
+import type { Chat, Friend, Message, User } from "@/types";
 
 export const mockChats: Chat[] = [
   {
@@ -92,3 +92,107 @@ export const mockUser: User = {
   email: "ali.yilmaz@example.com",
   avatar: "https://i.pravatar.cc/150?img=1",
 };
+
+export const mockMessages: Message[] = [
+  {
+    id: "1",
+    content: "Hey everyone! Welcome to our team chat 👋",
+    sender: {
+      id: "alice",
+      name: "Alice Johnson",
+      avatar:
+        "https://images.unsplash.com/photo-1494790108755-2616b612b5bb?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 3600000),
+    isOwn: false,
+  },
+  {
+    id: "2",
+    content: "Thanks Alice! Excited to be working with everyone.",
+    sender: {
+      id: "current",
+      name: "You",
+      avatar:
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 3500000),
+    isOwn: true,
+  },
+  {
+    id: "3",
+    content:
+      "I just finished the UI mockups for the new feature. Should I share them here?",
+    sender: {
+      id: "bob",
+      name: "Bob Smith",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 3000000),
+    isOwn: false,
+  },
+  {
+    id: "4",
+    content: "Yes please! That would be great to review.",
+    sender: {
+      id: "current",
+      name: "You",
+      avatar:
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 2800000),
+    isOwn: true,
+  },
+  {
+    id: "5",
+    content:
+      "Perfect! I'll upload them to the shared drive and post the link here in a few minutes.",
+    sender: {
+      id: "bob",
+      name: "Bob Smith",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 2700000),
+    isOwn: false,
+  },
+  {
+    id: "5",
+    content:
+      "Perfect! I'll upload them to the shared drive and post the link here in a few minutes.",
+    sender: {
+      id: "bob",
+      name: "Bob Smith",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 2700000),
+    isOwn: false,
+  },
+  {
+    id: "5",
+    content:
+      "Perfect! I'll upload them to the shared drive and post the link here in a few minutes.",
+    sender: {
+      id: "bob",
+      name: "Bob Smith",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 2700000),
+    isOwn: false,
+  },
+  {
+    id: "5",
+    content:
+      "Perfect! I'll upload them to the shared drive and post the link here in a few minutes.",
+    sender: {
+      id: "bob",
+      name: "Bob Smith",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
+    },
+    timestamp: new Date(Date.now() - 2700000),
+    isOwn: false,
+  },
+];

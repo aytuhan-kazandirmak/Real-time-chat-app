@@ -11,6 +11,7 @@ type ChatCardProps = {
 export default function ChatCard({ chat }: ChatCardProps) {
   return (
     <button
+      onClick={() => {}}
       className={cn(
         "w-full p-3 rounded-lg text-left hover:bg-accent transition-colors mb-1"
       )}

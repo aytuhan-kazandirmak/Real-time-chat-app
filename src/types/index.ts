@@ -24,3 +24,15 @@ export interface User {
   email: string;
   avatar?: string;
 }
+
+export interface Message {
+  id: string;
+  content: string;
+  sender: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  timestamp: Date;
+  isOwn: boolean;
+}
