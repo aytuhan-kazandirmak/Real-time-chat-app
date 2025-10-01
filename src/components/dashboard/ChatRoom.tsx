@@ -6,7 +6,7 @@ import { ScrollArea } from "../ui/scroll-area";
 
 export default function ChatRoom() {
   return (
-    <div className="relative flex-1 min-h-screen">
+    <div className="relative hidden sm:block sm:flex-1 min-h-screen">
       <ChatHeader
         chat={{
           id: "1",

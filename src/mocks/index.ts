@@ -156,43 +156,4 @@ export const mockMessages: Message[] = [
     timestamp: new Date(Date.now() - 2700000),
     isOwn: false,
   },
-  {
-    id: "5",
-    content:
-      "Perfect! I'll upload them to the shared drive and post the link here in a few minutes.",
-    sender: {
-      id: "bob",
-      name: "Bob Smith",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
-    },
-    timestamp: new Date(Date.now() - 2700000),
-    isOwn: false,
-  },
-  {
-    id: "5",
-    content:
-      "Perfect! I'll upload them to the shared drive and post the link here in a few minutes.",
-    sender: {
-      id: "bob",
-      name: "Bob Smith",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
-    },
-    timestamp: new Date(Date.now() - 2700000),
-    isOwn: false,
-  },
-  {
-    id: "5",
-    content:
-      "Perfect! I'll upload them to the shared drive and post the link here in a few minutes.",
-    sender: {
-      id: "bob",
-      name: "Bob Smith",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
-    },
-    timestamp: new Date(Date.now() - 2700000),
-    isOwn: false,
-  },
 ];

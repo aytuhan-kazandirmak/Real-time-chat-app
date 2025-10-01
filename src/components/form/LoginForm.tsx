@@ -25,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { supabase } from "@/supabaseClient";
 
 const formSchema = z.object({
   email: z.email(),
@@ -43,11 +44,17 @@ export default function LoginForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { email, password } = values;
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      console.log("error:", error);
+    }
   }
+
   return (
     <Card className="max-w-md w-full bg-white">
       <CardHeader>

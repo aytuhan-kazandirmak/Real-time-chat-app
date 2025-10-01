@@ -13,7 +13,7 @@ export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"chats" | "friends">("chats");
   return (
-    <div className="w-80 min-h-screen border-r bg-background relative">
+    <div className="w-full sm:w-80 min-h-screen border-r bg-background relative">
       {/* search input */}
       <div className="p-4 border-b">
         <div className="flex items-center gap-2 mb-4">

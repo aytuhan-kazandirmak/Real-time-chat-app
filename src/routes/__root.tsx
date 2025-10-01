@@ -1,11 +1,17 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeContextProvider } from "@/context/ThemeContext";
+import { AuthContextProvider } from "@/context/AuthContext";
 const RootLayout = () => (
   <>
-    <Toaster position="top-right" closeButton />
-    <Outlet />
-    <TanStackRouterDevtools />
+    <ThemeContextProvider>
+      <AuthContextProvider>
+        <Toaster position="top-right" closeButton />
+        <Outlet />
+        <TanStackRouterDevtools />
+      </AuthContextProvider>
+    </ThemeContextProvider>
   </>
 );
 
