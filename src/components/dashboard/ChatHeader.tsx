@@ -2,17 +2,34 @@ import type { Chat } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Moon, MoreVertical, Phone, Sun, Video } from "lucide-react";
-import { useContext } from "react";
-import { ThemeContext } from "@/context/ThemeContext";
+import { LogOut, Moon, MoreVertical, Phone, Sun } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { Spinner } from "../ui/spinner";
 
 type ChatHeaderProps = {
   chat: Chat;
 };
 
 export default function ChatHeader({ chat }: ChatHeaderProps) {
-  const { theme, themeChanger } = useContext(ThemeContext);
-  console.log("theme", theme);
+  const { theme, themeChanger } = useTheme();
+  const { logout } = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    setLoading(true);
+    try {
+      await logout();
+      navigate({ to: "/login" });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div className="flex items-center justify-between p-4 border-b bg-background">
       <div className="flex items-center gap-3">
@@ -41,8 +58,13 @@ export default function ChatHeader({ chat }: ChatHeaderProps) {
         <Button variant="ghost" size="icon">
           <Phone className="w-4 h-4" />
         </Button>
-        <Button variant="ghost" size="icon">
-          <Video className="w-4 h-4" />
+        <Button
+          disabled={loading}
+          onClick={handleLogout}
+          variant="ghost"
+          size="icon"
+        >
+          {loading ? <Spinner /> : <LogOut />}
         </Button>
         <Button
           variant="ghost"

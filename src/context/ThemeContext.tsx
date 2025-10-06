@@ -1,6 +1,12 @@
-import { createContext, useCallback, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
-export const ThemeContext = createContext(undefined);
+const ThemeContext = createContext(undefined);
 
 type ThemeContextProviderProps = {
   children: React.ReactNode;
@@ -29,4 +35,8 @@ export function ThemeContextProvider({ children }: ThemeContextProviderProps) {
       {children}
     </ThemeContext.Provider>
   );
+}
+
+export function useTheme() {
+  return useContext(ThemeContext);
 }

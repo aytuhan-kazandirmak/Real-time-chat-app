@@ -56,7 +56,7 @@ export default function ChatSidebar() {
         </button>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden border-b">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-[450px]">
           {activeTab === "chats"
             ? mockChats.map((chat) => <ChatCard key={chat.id} chat={chat} />)
@@ -66,7 +66,7 @@ export default function ChatSidebar() {
         </ScrollArea>
       </div>
 
-      <div className="px-3 fixed bottom-0 w-full h-[84px]">
+      <div className="px-3 fixed bottom-0 w-full h-[84px] border-t">
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 h-auto p-3"

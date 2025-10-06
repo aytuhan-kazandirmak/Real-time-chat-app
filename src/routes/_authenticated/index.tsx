@@ -2,7 +2,7 @@ import ChatRoom from "@/components/dashboard/ChatRoom";
 import ChatSidebar from "@/components/dashboard/ChatSidebar";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   component: Index,
 });
 

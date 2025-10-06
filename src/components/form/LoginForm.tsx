@@ -16,7 +16,7 @@ import {
 import { Input } from "../ui/input";
 
 import { Eye, EyeOff, MessageSquare } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { H4 } from "../typography/H4";
 import {
   Card,
@@ -25,7 +25,10 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { supabase } from "@/supabaseClient";
+
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { Spinner } from "../ui/spinner";
 
 const formSchema = z.object({
   email: z.email(),
@@ -43,15 +46,23 @@ export default function LoginForm() {
       password: "",
     },
   });
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     const { email, password } = values;
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      console.log("error:", error);
+    try {
+      const result = await login(email, password);
+      if (result.success) {
+        toast.success("Welcome back!");
+        navigate({ to: "/" });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -118,8 +129,14 @@ export default function LoginForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? (
+                <span className="flex items-center justify-center gap-4">
+                  <Spinner /> Signing in...
+                </span>
+              ) : (
+                "Sign in"
+              )}
             </Button>
             <FormDescription className="text-center">
               Don't have an account?{" "}

@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import {
 import { Input } from "../ui/input";
 
 import { Eye, EyeOff, MessageSquare } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { H4 } from "../typography/H4";
 
 import {
@@ -27,7 +27,9 @@ import {
   CardTitle,
 } from "../ui/card";
 import { toast } from "sonner";
-import { supabase } from "@/supabaseClient";
+
+import { useAuth } from "@/context/AuthContext";
+import { Spinner } from "../ui/spinner";
 
 const formSchema = z
   .object({
@@ -77,6 +79,7 @@ function reducer(state: InitialStateType, action: ActionType) {
 
 export default function SignupForm() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -86,20 +89,24 @@ export default function SignupForm() {
       confirmPassword: "",
     },
   });
+  const { signUpNewUser } = useAuth();
+  const navigate = useNavigate();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { fullName, email, password } = values;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          fullName: fullName,
-        },
-      },
-    });
-    if (error) {
-      console.log("error:", error);
+    setLoading(true);
+    try {
+      const result = await signUpNewUser(fullName, email, password);
+      if (result.success) {
+        toast.success(
+          "Your account has been created. Please check your email!"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("There was an error!");
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -213,11 +220,18 @@ export default function SignupForm() {
               )}
             />
             <Button
-              onClick={() => toast.success("Event has been created.")}
+              // onClick={() => toast.success("Event has been created.")}
+              disabled={loading}
               type="submit"
               className="w-full"
             >
-              Create account
+              {loading ? (
+                <span className="flex justify-center items-center gap-4">
+                  <Spinner /> Setting things up...
+                </span>
+              ) : (
+                "Create account"
+              )}
             </Button>
             <FormDescription className="text-center">
               Already have an account?{" "}
