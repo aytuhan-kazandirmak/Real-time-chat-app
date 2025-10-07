@@ -1,6 +1,6 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { AuthContextProvider } from "./context/AuthContext";
+import { AuthContextProvider } from "./context/auth/AuthProvider";
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { AuthContextProvider } from "./context/AuthContext";
+
 import { ThemeContextProvider } from "./context/ThemeContext";
 
 import "./index.css";
@@ -13,9 +13,7 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ThemeContextProvider>
-        <AuthContextProvider>
-          <App />
-        </AuthContextProvider>
+        <App />
       </ThemeContextProvider>
     </StrictMode>
   );

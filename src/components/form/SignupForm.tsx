@@ -16,7 +16,7 @@ import {
 import { Input } from "../ui/input";
 
 import { Eye, EyeOff, MessageSquare } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { H4 } from "../typography/H4";
 
 import {
@@ -28,8 +28,8 @@ import {
 } from "../ui/card";
 import { toast } from "sonner";
 
-import { useAuth } from "@/context/AuthContext";
 import { Spinner } from "../ui/spinner";
+import { useAuth } from "@/context/auth/useAuth";
 
 const formSchema = z
   .object({
@@ -90,7 +90,6 @@ export default function SignupForm() {
     },
   });
   const { signUpNewUser } = useAuth();
-  const navigate = useNavigate();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { fullName, email, password } = values;

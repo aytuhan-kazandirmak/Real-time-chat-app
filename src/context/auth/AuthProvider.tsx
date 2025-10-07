@@ -1,17 +1,21 @@
 import { supabase } from "@/supabaseClient";
-import React, { createContext, useContext, useEffect, useState } from "react";
-
-const AuthContext = createContext(null);
+import type { Session } from "@supabase/supabase-js";
+import React, { useEffect, useState } from "react";
+import { AuthContext } from "./AuthContext";
 
 type AuthContextProviderProps = {
   children: React.ReactNode;
 };
 
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
-  const [session, setSession] = useState(undefined);
+  const [session, setSession] = useState<Session | null>(null);
 
-  async function signUpNewUser(fullName, email, password) {
-    const { data, error } = await supabase.auth.signUp({
+  async function signUpNewUser(
+    fullName: string,
+    email: string,
+    password: string
+  ) {
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -24,10 +28,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       console.log("error:", error);
       return { success: false, error };
     }
-    return { success: true, data };
+    return { success: true };
   }
-  async function login(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+  async function login(email: string, password: string) {
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -38,7 +42,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         error,
       };
     }
-    return { success: true, data };
+    return { success: true };
   }
 
   async function logout() {
@@ -47,7 +51,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     if (error) {
       console.log(error);
     }
-    setSession(undefined);
+    setSession(null);
   }
 
   useEffect(() => {
@@ -74,8 +78,4 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  return useContext(AuthContext);
 }

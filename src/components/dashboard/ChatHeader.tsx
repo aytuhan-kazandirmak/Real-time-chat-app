@@ -4,10 +4,11 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { LogOut, Moon, MoreVertical, Phone, Sun } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
-import { useAuth } from "@/context/AuthContext";
+
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Spinner } from "../ui/spinner";
+import { useAuth } from "@/context/auth/useAuth";
 
 type ChatHeaderProps = {
   chat: Chat;

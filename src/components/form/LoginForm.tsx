@@ -26,9 +26,9 @@ import {
   CardTitle,
 } from "../ui/card";
 
-import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Spinner } from "../ui/spinner";
+import { useAuth } from "@/context/auth/useAuth";
 
 const formSchema = z.object({
   email: z.email(),
