@@ -33,7 +33,7 @@ import { useAuth } from "@/context/auth/useAuth";
 
 const formSchema = z
   .object({
-    fullName: z.string().trim().min(1, { message: "Full name is required" }),
+    full_name: z.string().trim().min(1, { message: "Full name is required" }),
     email: z.email(),
     password: z
       .string()
@@ -83,7 +83,7 @@ export default function SignupForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
+      full_name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -92,10 +92,10 @@ export default function SignupForm() {
   const { signUpNewUser } = useAuth();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { fullName, email, password } = values;
+    const { full_name, email, password } = values;
     setLoading(true);
     try {
-      const result = await signUpNewUser(fullName, email, password);
+      const result = await signUpNewUser(full_name, email, password);
       if (result.success) {
         toast.success(
           "Your account has been created. Please check your email!"
@@ -128,7 +128,7 @@ export default function SignupForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="fullName"
+              name="full_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>

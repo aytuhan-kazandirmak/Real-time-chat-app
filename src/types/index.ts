@@ -36,3 +36,12 @@ export interface Message {
   timestamp: Date;
   isOwn: boolean;
 }
+export interface Profiles {
+  avatar_url: string | null;
+  created_at: string;
+  email: string;
+  full_name: string;
+  id: string;
+  is_online: boolean;
+  updated_at: string | null;
+}

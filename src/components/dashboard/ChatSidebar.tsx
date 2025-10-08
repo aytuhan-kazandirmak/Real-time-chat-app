@@ -5,13 +5,18 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatCard from "./ChatCard";
 import FriendCard from "./FriendCard";
-import { mockChats, mockFriends, mockUser } from "@/mocks";
+import { mockChats, mockUser } from "@/mocks";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useAuth } from "@/context/auth/useAuth";
+import { useProfileQuery } from "@/hooks/useQueries";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"chats" | "friends">("chats");
+
+  const { session } = useAuth();
+  const { data: profiles } = useProfileQuery(session?.user.id);
   return (
     <div className="w-full sm:w-80 min-h-screen border-r bg-background relative">
       {/* search input */}
@@ -60,7 +65,7 @@ export default function ChatSidebar() {
         <ScrollArea className="h-[450px]">
           {activeTab === "chats"
             ? mockChats.map((chat) => <ChatCard key={chat.id} chat={chat} />)
-            : mockFriends.map((friend) => (
+            : profiles?.map((friend) => (
                 <FriendCard key={friend.id} friend={friend} />
               ))}
         </ScrollArea>

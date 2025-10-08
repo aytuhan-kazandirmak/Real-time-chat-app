@@ -20,7 +20,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       password,
       options: {
         data: {
-          fullName: fullName,
+          full_name: fullName,
         },
       },
     });
