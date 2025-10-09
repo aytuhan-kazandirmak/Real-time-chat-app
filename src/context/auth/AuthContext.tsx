@@ -7,13 +7,11 @@ export type AuthContextType = {
     fullName: string,
     email: string,
     password: string
-  ) => Promise<{ success: boolean }>;
+  ) => Promise<{ success: boolean; error?: any }>;
   login: (
     email: string,
     password: string
-  ) => Promise<{
-    success: boolean;
-  }>;
+  ) => Promise<{ success: boolean; error?: any }>;
   logout: () => Promise<void>;
 };
 

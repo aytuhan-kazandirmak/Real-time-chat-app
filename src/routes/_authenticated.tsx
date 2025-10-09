@@ -1,7 +1,9 @@
+import ChatSidebar from "@/components/dashboard/ChatSidebar";
 import { supabase } from "@/supabaseClient";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated")({
+  component: AuthenticatedLayout,
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
@@ -10,3 +12,12 @@ export const Route = createFileRoute("/_authenticated")({
   },
   pendingComponent: () => <div>Loading...</div>,
 });
+
+function AuthenticatedLayout() {
+  return (
+    <div className="h-screen flex">
+      <ChatSidebar />
+      <Outlet />
+    </div>
+  );
+}

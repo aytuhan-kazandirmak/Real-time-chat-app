@@ -13,10 +13,10 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as ChatRoomRouteImport } from './routes/$chatRoom'
 import { Route as PostsIndexRouteImport } from './routes/posts/index'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as PostsPostIdRouteImport } from './routes/posts/$postId'
+import { Route as AuthenticatedChatRoomRouteImport } from './routes/_authenticated/$chatRoom'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -37,11 +37,6 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChatRoomRoute = ChatRoomRouteImport.update({
-  id: '/$chatRoom',
-  path: '/$chatRoom',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PostsIndexRoute = PostsIndexRouteImport.update({
   id: '/posts/',
   path: '/posts/',
@@ -57,32 +52,37 @@ const PostsPostIdRoute = PostsPostIdRouteImport.update({
   path: '/posts/$postId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedChatRoomRoute = AuthenticatedChatRoomRouteImport.update({
+  id: '/$chatRoom',
+  path: '/$chatRoom',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/$chatRoom': typeof ChatRoomRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/$chatRoom': typeof AuthenticatedChatRoomRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/': typeof AuthenticatedIndexRoute
   '/posts': typeof PostsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/$chatRoom': typeof ChatRoomRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/$chatRoom': typeof AuthenticatedChatRoomRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/': typeof AuthenticatedIndexRoute
   '/posts': typeof PostsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/$chatRoom': typeof ChatRoomRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_authenticated/$chatRoom': typeof AuthenticatedChatRoomRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/posts/': typeof PostsIndexRoute
@@ -90,36 +90,35 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/$chatRoom'
     | '/about'
     | '/login'
     | '/signup'
+    | '/$chatRoom'
     | '/posts/$postId'
     | '/'
     | '/posts'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/$chatRoom'
     | '/about'
     | '/login'
     | '/signup'
+    | '/$chatRoom'
     | '/posts/$postId'
     | '/'
     | '/posts'
   id:
     | '__root__'
-    | '/$chatRoom'
     | '/_authenticated'
     | '/about'
     | '/login'
     | '/signup'
+    | '/_authenticated/$chatRoom'
     | '/posts/$postId'
     | '/_authenticated/'
     | '/posts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  ChatRoomRoute: typeof ChatRoomRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
@@ -158,13 +157,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$chatRoom': {
-      id: '/$chatRoom'
-      path: '/$chatRoom'
-      fullPath: '/$chatRoom'
-      preLoaderRoute: typeof ChatRoomRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/posts/': {
       id: '/posts/'
       path: '/posts'
@@ -186,14 +178,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsPostIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/$chatRoom': {
+      id: '/_authenticated/$chatRoom'
+      path: '/$chatRoom'
+      fullPath: '/$chatRoom'
+      preLoaderRoute: typeof AuthenticatedChatRoomRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedChatRoomRoute: typeof AuthenticatedChatRoomRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedChatRoomRoute: AuthenticatedChatRoomRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
@@ -202,7 +203,6 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  ChatRoomRoute: ChatRoomRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,

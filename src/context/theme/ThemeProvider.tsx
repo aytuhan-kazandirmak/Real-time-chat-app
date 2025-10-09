@@ -1,19 +1,12 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
-
-const ThemeContext = createContext(undefined);
+import { useCallback, useMemo, useState } from "react";
+import { ThemeContext } from "./ThemeContext";
 
 type ThemeContextProviderProps = {
   children: React.ReactNode;
 };
 
 export function ThemeContextProvider({ children }: ThemeContextProviderProps) {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<string>("light");
 
   const themeChanger = useCallback(() => {
     if (theme === "light") {
@@ -35,8 +28,4 @@ export function ThemeContextProvider({ children }: ThemeContextProviderProps) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  return useContext(ThemeContext);
 }

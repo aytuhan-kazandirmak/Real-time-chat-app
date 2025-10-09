@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import truncateText from "@/utils/text";
+import { Link } from "@tanstack/react-router";
 
 type ChatCardProps = {
   chat: Chat;
@@ -10,11 +11,14 @@ type ChatCardProps = {
 
 export default function ChatCard({ chat }: ChatCardProps) {
   return (
-    <button
-      onClick={() => {}}
+    <Link
+      to="/$chatRoom"
       className={cn(
         "w-full p-3 rounded-lg text-left hover:bg-accent transition-colors mb-1"
       )}
+      params={{
+        chatRoom: chat.id,
+      }}
     >
       <div className="flex items-start gap-3">
         <div className="relative">
@@ -56,6 +60,6 @@ export default function ChatCard({ chat }: ChatCardProps) {
           )}
         </div>
       </div>
-    </button>
+    </Link>
   );
 }

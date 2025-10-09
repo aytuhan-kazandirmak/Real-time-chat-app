@@ -1,9 +1,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-
-import { ThemeContextProvider } from "./context/ThemeContext";
-
+import { ThemeContextProvider } from "./context/theme/ThemeProvider";
 import "./index.css";
 
 // Render the app

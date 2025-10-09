@@ -3,12 +3,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { LogOut, Moon, MoreVertical, Phone, Sun } from "lucide-react";
-import { useTheme } from "@/context/ThemeContext";
 
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Spinner } from "../ui/spinner";
 import { useAuth } from "@/context/auth/useAuth";
+import { useTheme } from "@/context/theme/useAuth";
 
 type ChatHeaderProps = {
   chat: Chat;

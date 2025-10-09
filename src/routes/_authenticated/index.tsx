@@ -1,16 +1,9 @@
-import ChatRoom from "@/components/dashboard/ChatRoom";
-import ChatSidebar from "@/components/dashboard/ChatSidebar";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/")({
-  component: Index,
+  component: RouteComponent,
 });
 
-function Index() {
-  return (
-    <div className="h-screen flex">
-      <ChatSidebar />
-      <ChatRoom />
-    </div>
-  );
+function RouteComponent() {
+  return <div className="bg-red-300 w-full">Lütfen bir mesaj seçiniz!!!</div>;
 }
