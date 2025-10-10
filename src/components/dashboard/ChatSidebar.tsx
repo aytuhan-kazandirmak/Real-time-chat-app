@@ -9,16 +9,17 @@ import { mockChats, mockUser } from "@/mocks";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/context/auth/useAuth";
-import { useProfileQuery } from "@/hooks/useQueries";
+import { useProfilesQuery } from "@/hooks/useQueries";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"chats" | "friends">("chats");
 
   const { session } = useAuth();
-  const { data: profiles } = useProfileQuery(session?.user.id);
+  console.log(session);
+  const { data: profiles } = useProfilesQuery(session?.user.id);
   return (
-    <div className="w-full sm:w-80 min-h-screen border-r bg-background relative">
+    <div className="w-full md:w-80 min-h-screen border-r bg-background relative">
       {/* search input */}
       <div className="p-4 border-b">
         <div className="flex items-center gap-2 mb-4">
@@ -83,8 +84,12 @@ export default function ChatSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start">
-            <p className="text-sm font-medium">{mockUser?.name}</p>
-            <p className="text-xs text-muted-foreground">{mockUser?.email}</p>
+            <p className="text-sm font-medium">
+              {session?.user?.user_metadata.full_name}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {session?.user?.user_metadata.email}
+            </p>
           </div>
         </Button>
       </div>

@@ -15,9 +15,5 @@ function RouteComponent() {
   const { chatRoomId } = Route.useLoaderData();
   const filteredChat = mockChats.filter((chat) => chat.id === chatRoomId);
 
-  return (
-    <div className="w-full">
-      <ChatRoom chat={filteredChat} messages={mockMessages} />
-    </div>
-  );
+  return <ChatRoom chat={filteredChat} messages={mockMessages} />;
 }

@@ -6,11 +6,10 @@ import { ScrollArea } from "../ui/scroll-area";
 
 export default function ChatRoom({ chat, messages }) {
   return (
-    <div className="relative hidden sm:block sm:flex-1 min-h-screen">
+    <div className="relative flex-1 ">
       <ChatHeader chat={chat[0]} />
-      <div className="min-h-0 overflow-hidden">
-        {" "}
-        <ScrollArea className="h-[527px] w-full p-4">
+      <div className="overflow-hidden">
+        <ScrollArea className="h-[545px] w-full p-4">
           {mockMessages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}

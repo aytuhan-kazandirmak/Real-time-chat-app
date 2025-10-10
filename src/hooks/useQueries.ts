@@ -1,7 +1,7 @@
 import { supabase } from "@/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useProfileQuery(id?: string) {
+export function useProfilesQuery(id?: string) {
   return useQuery({
     queryKey: ["getProfiles"],
     queryFn: async () => {
@@ -11,10 +11,32 @@ export function useProfileQuery(id?: string) {
         .neq("id", id);
 
       if (error) {
-        return console.error("Profil sorgu hatası:", error);
+        return console.error("useQuery", error);
       }
 
       return profiles;
+    },
+  });
+}
+
+export function useCreateChat() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase
+        .from("chats")
+        .insert([{ some_column: "someValue", other_column: "otherValue" }])
+        .select();
+
+      if (error) {
+        return console.error("useCreateChat", error);
+      }
+      return data;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({
+        // burası doldurulacak
+      });
     },
   });
 }
