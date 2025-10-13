@@ -1,4 +1,4 @@
-import { MessageSquare, Search } from "lucide-react";
+import { Bell, MessageSquare, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -9,15 +9,22 @@ import { mockChats, mockUser } from "@/mocks";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/context/auth/useAuth";
-import { useProfilesQuery } from "@/hooks/useQueries";
+import { useGetFriendRequest, useProfilesQuery } from "@/hooks/useQueries";
+import { Badge } from "../ui/badge";
+import NotificationCard from "./NotificationCard";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"chats" | "friends">("chats");
+  const [activeTab, setActiveTab] = useState<
+    "chats" | "friends" | "notifications"
+  >("chats");
 
   const { session } = useAuth();
-  console.log(session);
+  const { data: friendRequests } = useGetFriendRequest(session?.user.id);
+  console.log("friendRequests", friendRequests);
+
   const { data: profiles } = useProfilesQuery(session?.user.id);
+
   return (
     <div className="w-full md:w-80 min-h-screen border-r bg-background relative">
       {/* search input */}
@@ -60,15 +67,44 @@ export default function ChatSidebar() {
         >
           Friends
         </button>
+        <button
+          onClick={() => setActiveTab("notifications")}
+          className={cn(
+            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors relative",
+            activeTab === "notifications"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <div className="flex items-center justify-center gap-1">
+            <Bell className="w-4 h-4" />
+            {friendRequests && friendRequests?.length >= 1 ? (
+              <Badge variant="destructive" className="h-5 min-w-5 px-1 text-xs">
+                {friendRequests?.length}
+              </Badge>
+            ) : null}
+          </div>
+        </button>
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-[450px]">
-          {activeTab === "chats"
-            ? mockChats.map((chat) => <ChatCard key={chat.id} chat={chat} />)
-            : profiles?.map((friend) => (
-                <FriendCard key={friend.id} friend={friend} />
+          {activeTab === "chats" ? (
+            mockChats.map((chat) => <ChatCard key={chat.id} chat={chat} />)
+          ) : activeTab === "friends" ? (
+            profiles?.map((friend) => (
+              <FriendCard key={friend.id} friend={friend} />
+            ))
+          ) : (
+            <div className="p-2">
+              {friendRequests?.map((friendRequest) => (
+                <NotificationCard
+                  friendRequest={friendRequest}
+                  key={friendRequest.user.id}
+                />
               ))}
+            </div>
+          )}
         </ScrollArea>
       </div>
 

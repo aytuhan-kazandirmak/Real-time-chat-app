@@ -40,3 +40,53 @@ export function useCreateChat() {
     },
   });
 }
+
+export function useGetFriendRequest(id: string | undefined) {
+  return useQuery({
+    queryKey: ["getUsersFriendRequest"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("contacts")
+        .select(
+          `
+    user_id,
+    status,
+    created_at,
+    user:profiles (
+      id,
+      full_name,
+      email
+    )
+  `
+        )
+        .eq("contact_id", id)
+        .eq("status", "pending");
+      if (error) console.log("An error occured", error);
+
+      return data;
+    },
+  });
+}
+
+// alt taraf use mutation kullanıcı arkadaşlık isteğini kabul etme veya reddetme burada hem bir id alınacak hem de bir parametre
+// sil ya da kabul et parametresi
+
+// export function useDeleteOrAcceptFriendRequests(id: string | undefined) {
+//   return useQuery({
+//     queryKey: ["getUsersFriendRequest"],
+//     queryFn: async () => {
+//     const { data, error } = await supabase
+//       .from("contacts")
+//       .update({
+//         status: "accepted",
+//         created_at: new Date().toISOString(),
+//       })
+//       .eq("user_id", userId)
+//       .eq("contact_id", myId)
+//       .select();
+//       if (error) console.log("An error occured", error);
+
+//       return data;
+//     },
+//   });
+// }
