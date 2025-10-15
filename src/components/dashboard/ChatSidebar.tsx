@@ -9,9 +9,13 @@ import { mockChats, mockUser } from "@/mocks";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/context/auth/useAuth";
-import { useGetFriendRequest, useProfilesQuery } from "@/hooks/useQueries";
+import {
+  useGetFriendRequest,
+  useGetFriends,
+  useProfilesQuery,
+} from "@/hooks/useQueries";
 import { Badge } from "../ui/badge";
-import NotificationCard from "./NotificationCard";
+import FriendRequestCard from "./FriendRequestCard";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,8 +25,8 @@ export default function ChatSidebar() {
 
   const { session } = useAuth();
   const { data: friendRequests } = useGetFriendRequest(session?.user.id);
-  console.log("friendRequests", friendRequests);
-
+  const { data: friendList } = useGetFriends(session?.user.id);
+  console.log("friend list", friendList);
   const { data: profiles } = useProfilesQuery(session?.user.id);
 
   return (
@@ -98,9 +102,9 @@ export default function ChatSidebar() {
           ) : (
             <div className="p-2">
               {friendRequests?.map((friendRequest) => (
-                <NotificationCard
+                <FriendRequestCard
                   friendRequest={friendRequest}
-                  key={friendRequest.user.id}
+                  key={friendRequest.sender.id}
                 />
               ))}
             </div>

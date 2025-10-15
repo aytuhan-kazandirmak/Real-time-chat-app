@@ -1,5 +1,6 @@
 import { supabase } from "@/supabaseClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export function useProfilesQuery(id?: string) {
   return useQuery({
@@ -15,6 +16,53 @@ export function useProfilesQuery(id?: string) {
       }
 
       return profiles;
+    },
+  });
+}
+
+export function useGetFriends(id?: string) {
+  return useQuery({
+    queryKey: ["getFriends", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data: contacts, error } = await supabase
+        .from("contacts")
+        .select(
+          `
+  user_id,
+  contact_id,
+  status,
+  created_at,
+  user:profiles!contacts_user_id_fkey (
+    id,
+    full_name,
+    email
+  ),
+  contact:profiles!contacts_contact_id_fkey (
+    id,
+    full_name,
+    email
+  )
+`
+        )
+        .or(`user_id.eq.${id},contact_id.eq.${id}`)
+        .eq("status", "accepted");
+
+      if (error) {
+        console.error("useQuery", error);
+        return [];
+      }
+
+      const friends = contacts.map((row) => {
+        const friend = row.user_id === id ? row.contact : row.user;
+        return {
+          id: friend.id,
+          full_name: friend.full_name,
+          email: friend.email,
+          created_at: row.created_at,
+        };
+      });
+      return friends;
     },
   });
 }
@@ -49,10 +97,10 @@ export function useGetFriendRequest(id: string | undefined) {
         .from("contacts")
         .select(
           `
-    user_id,
+    requestId:id,
     status,
     created_at,
-    user:profiles (
+    sender:profiles!contacts_user_id_fkey (
       id,
       full_name,
       email
@@ -71,22 +119,53 @@ export function useGetFriendRequest(id: string | undefined) {
 // alt taraf use mutation kullanıcı arkadaşlık isteğini kabul etme veya reddetme burada hem bir id alınacak hem de bir parametre
 // sil ya da kabul et parametresi
 
-// export function useDeleteOrAcceptFriendRequests(id: string | undefined) {
-//   return useQuery({
-//     queryKey: ["getUsersFriendRequest"],
-//     queryFn: async () => {
-//     const { data, error } = await supabase
-//       .from("contacts")
-//       .update({
-//         status: "accepted",
-//         created_at: new Date().toISOString(),
-//       })
-//       .eq("user_id", userId)
-//       .eq("contact_id", myId)
-//       .select();
-//       if (error) console.log("An error occured", error);
+export function useAcceptFriendRequests() {
+  const queryClient = useQueryClient();
 
-//       return data;
-//     },
-//   });
-// }
+  return useMutation({
+    mutationFn: async (payload: {
+      userId: string;
+      contactId: string | undefined;
+    }) => {
+      const { data, error } = await supabase
+        .from("contacts")
+        .update({
+          status: "accepted",
+          created_at: new Date().toISOString(),
+        })
+        .eq("user_id", payload.userId)
+        .eq("contact_id", payload.contactId)
+        .select();
+
+      if (error) {
+        toast.error(`Something went wrong! ${error.message}`);
+        return error;
+      }
+      return (
+        data.length > 0 && toast.success("Friend request accepted successfuly!")
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [],
+      });
+    },
+  });
+}
+
+export function useRejectFriendRequests() {
+  return useMutation({
+    mutationFn: async (requestId: string) => {
+      const { error } = await supabase
+        .from("contacts")
+        .delete()
+        .eq("id", requestId);
+
+      if (error) {
+        return toast.error(`Something went wrong ${error.message}`);
+      }
+
+      return { success: true };
+    },
+  });
+}

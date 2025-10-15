@@ -1,6 +1,9 @@
 import { Button } from "../ui/button";
 import { Check, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useAcceptFriendRequests } from "@/hooks/useQueries";
+import { useAuth } from "@/context/auth/useAuth";
+import { toast } from "sonner";
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -17,39 +20,49 @@ function timeAgo(dateString: string) {
 }
 
 export default function NotificationCard({ friendRequest }) {
-  const { user: contact } = friendRequest;
+  const { session } = useAuth();
+
+  const { mutateAsync: acceptFriend, isPending: isPendingAcceptFriend } =
+    useAcceptFriendRequests();
+  const { sender } = friendRequest;
+
+  async function handleAcceptFriend() {
+    await acceptFriend({
+      contactId: session?.user.id,
+      userId: sender.id,
+    });
+  }
   return (
     <>
       <div
-        key={contact.id}
-        className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors mb-2"
+        key={sender.id}
+        className="flex gap-3 p-3 rounded-lg hover:bg-accent transition-colors mb-2"
       >
         <Avatar className="w-12 h-12 shrink-0">
-          <AvatarImage src={contact?.avatar} alt={contact?.name} />
+          <AvatarImage src={sender?.avatar} alt={sender?.name} />
           <AvatarFallback>
-            {contact.full_name.charAt(0).toUpperCase()}
+            {sender.full_name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <div>
-              <h4 className="font-medium">{contact.full_name}</h4>
-              <p className="text-xs text-muted-foreground">
-                {timeAgo(friendRequest.created_at)}
-              </p>
-            </div>
+          <div className="mb-2">
+            <h4 className="font-medium">{sender.full_name}</h4>
+            <p className="text-sm text-muted-foreground truncate">
+              {sender.email}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {timeAgo(friendRequest.created_at)} · 3 mutual friends
+            </p>
           </div>
 
           <div className="flex gap-2 mt-2">
             <Button
               size="sm"
               variant="default"
-              //   onClick={() =>
-              //     handleAccept(friendRequest.id, friendRequest.name)
-              //   }
-              //   disabled={isProcessing}
-              className="flex-1"
+              onClick={handleAcceptFriend}
+              disabled={isPendingAcceptFriend}
+              className="flex-1 cursor-pointer"
             >
               <Check className="w-4 h-4 mr-1" />
               Accept
@@ -59,7 +72,7 @@ export default function NotificationCard({ friendRequest }) {
               variant="outline"
               //   onClick={() => handleReject(request.id, request.name)}
               //   disabled={isProcessing}
-              className="flex-1"
+              className="flex-1 cursor-pointer"
             >
               <X className="w-4 h-4 mr-1" />
               Decline
