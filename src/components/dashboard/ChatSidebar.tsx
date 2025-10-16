@@ -9,11 +9,7 @@ import { mockChats, mockUser } from "@/mocks";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/context/auth/useAuth";
-import {
-  useGetFriendRequest,
-  useGetFriends,
-  useProfilesQuery,
-} from "@/hooks/useQueries";
+import { useGetFriendRequest, useGetFriends } from "@/hooks/useQueries";
 import { Badge } from "../ui/badge";
 import FriendRequestCard from "./FriendRequestCard";
 
@@ -24,10 +20,12 @@ export default function ChatSidebar() {
   >("chats");
 
   const { session } = useAuth();
-  const { data: friendRequests } = useGetFriendRequest(session?.user.id);
+  const { data: friendRequests } = useGetFriendRequest(session?.user.id || ""); // Icerde bos id durumunu handle et
   const { data: friendList } = useGetFriends(session?.user.id);
   console.log("friend list", friendList);
-  const { data: profiles } = useProfilesQuery(session?.user.id);
+  // const { data: profiles } = useProfilesQuery(session?.user.id);
+
+  console.log("friendRequests", friendRequests);
 
   return (
     <div className="w-full md:w-80 min-h-screen border-r bg-background relative">
@@ -96,7 +94,7 @@ export default function ChatSidebar() {
           {activeTab === "chats" ? (
             mockChats.map((chat) => <ChatCard key={chat.id} chat={chat} />)
           ) : activeTab === "friends" ? (
-            profiles?.map((friend) => (
+            friendList?.map((friend) => (
               <FriendCard key={friend.id} friend={friend} />
             ))
           ) : (

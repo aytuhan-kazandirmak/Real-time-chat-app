@@ -1,29 +1,58 @@
-import type { Profiles } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
-import { supabase } from "@/supabaseClient";
-import { useAuth } from "@/context/auth/useAuth";
-import { toast } from "sonner";
+import type { Profiles } from "@/types";
 
 type FriendCardProps = {
   friend: Profiles;
 };
 
 export default function FriendCard({ friend }: FriendCardProps) {
-  const { session } = useAuth();
-  async function handleClick() {
-    const { error } = await supabase
-      .from("contacts")
-      .insert([
-        { user_id: session?.user.id, contact_id: friend.id, status: "pending" },
-      ]);
+  // const { session } = useAuth();
 
-    if (error) {
-      toast("Friend request could not be sent!");
-    }
-    return toast("Friend request has been sent!");
-  }
+  // async function handleClick() {
+  //   if (!session?.user.id) return;
+
+  //   const { data: existingRequests, error: checkError } = await supabase
+  //     .from("contacts")
+  //     .select("*")
+  //     .eq("user_id", session.user.id)
+  //     .eq("contact_id", friend.id)
+  //     .in("status", ["pending", "accepted"]);
+
+  //   if (checkError) {
+  //     console.error(checkError);
+  //     toast("An error occurred while checking friend requests!");
+  //     return;
+  //   }
+
+  //   if (existingRequests && existingRequests.length > 0) {
+  //     const request = existingRequests[0];
+
+  //     if (request.status === "pending") {
+  //       toast("Friend request already sent and pending!");
+  //       return;
+  //     }
+
+  //     if (request.status === "accepted") {
+  //       toast("You are already friends!");
+  //       return;
+  //     }
+  //   }
+
+  //   const { error: insertError } = await supabase
+  //     .from("contacts")
+  //     .insert([
+  //       { user_id: session?.user.id, contact_id: friend.id, status: "pending" },
+  //     ]);
+
+  //   if (insertError) {
+  //     console.error(insertError);
+  //     toast("Friend request could not be sent!");
+  //     return;
+  //   }
+
+  //   toast("Friend request has been sent!");
+  // }
+
   return (
     <div className="flex items-center justify-between p-3 rounded-lg hover:bg-accent transition-colors mb-1">
       <div className="flex items-center gap-3">
@@ -44,18 +73,23 @@ export default function FriendCard({ friend }: FriendCardProps) {
 
         <div>
           <h4 className="font-medium">{friend.full_name}</h4>
+          <p className="text-sm text-muted-foreground truncate">
+            {friend.email}
+          </p>
           <p className="text-sm text-muted-foreground">{friend.is_online}</p>
         </div>
       </div>
 
-      <Button
+      {/* belki buraya kullanıcıyı arkadaş listesinden çıkarma ya da bloklama gelebilir */}
+
+      {/* <Button
         onClick={handleClick}
         size="sm"
         variant="ghost"
         className="shrink-0"
       >
         <Plus className="w-4 h-4" />
-      </Button>
+      </Button> */}
     </div>
   );
 }

@@ -1,8 +1,9 @@
+
 import { supabase } from "@/supabaseClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useProfilesQuery(id?: string) {
+export function useProfilesQuery(id: string) {
   return useQuery({
     queryKey: ["getProfiles"],
     queryFn: async () => {
@@ -36,12 +37,16 @@ export function useGetFriends(id?: string) {
   user:profiles!contacts_user_id_fkey (
     id,
     full_name,
-    email
+    email,
+    avatar_url,
+    is_online
   ),
   contact:profiles!contacts_contact_id_fkey (
     id,
     full_name,
-    email
+    email,
+    avatar_url,
+    is_online
   )
 `
         )
@@ -60,6 +65,8 @@ export function useGetFriends(id?: string) {
           full_name: friend.full_name,
           email: friend.email,
           created_at: row.created_at,
+          avatar_url: friend.avatar_url,
+          is_online: friend.is_online,
         };
       });
       return friends;
@@ -67,29 +74,31 @@ export function useGetFriends(id?: string) {
   });
 }
 
-export function useCreateChat() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase
-        .from("chats")
-        .insert([{ some_column: "someValue", other_column: "otherValue" }])
-        .select();
+// export function useCreateChat() {
+//   const queryClient = useQueryClient();
+//   return useMutation({
+//     mutationFn: async () => {
+//       const { data, error } = await supabase
+//         .from("chats")
+//         .insert([{ some_column: "someValue", other_column: "otherValue" }])
+//         .select();
 
-      if (error) {
-        return console.error("useCreateChat", error);
-      }
-      return data;
-    },
-    onSuccess() {
-      queryClient.invalidateQueries({
-        // burası doldurulacak
-      });
-    },
-  });
-}
+//       if (error) {
+//         return console.error("useCreateChat", error);
+//       }
+//       return data;
+//     },
+//     onSuccess() {
+//       queryClient.invalidateQueries({
+//         // burası doldurulacak
+//       });
+//     },
+//   });
+// }
 
-export function useGetFriendRequest(id: string | undefined) {
+
+export function useGetFriendRequest(id: string)
+ {
   return useQuery({
     queryKey: ["getUsersFriendRequest"],
     queryFn: async () => {
@@ -97,13 +106,14 @@ export function useGetFriendRequest(id: string | undefined) {
         .from("contacts")
         .select(
           `
-    requestId:id,
+    id,
     status,
     created_at,
     sender:profiles!contacts_user_id_fkey (
       id,
       full_name,
-      email
+      email,
+      avatar_url
     )
   `
         )
@@ -111,7 +121,7 @@ export function useGetFriendRequest(id: string | undefined) {
         .eq("status", "pending");
       if (error) console.log("An error occured", error);
 
-      return data;
+      return data 
     },
   });
 }
@@ -125,7 +135,7 @@ export function useAcceptFriendRequests() {
   return useMutation({
     mutationFn: async (payload: {
       userId: string;
-      contactId: string | undefined;
+      contactId: string;
     }) => {
       const { data, error } = await supabase
         .from("contacts")
@@ -152,20 +162,24 @@ export function useAcceptFriendRequests() {
     },
   });
 }
-
 export function useRejectFriendRequests() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (requestId: string) => {
+    mutationFn: async (requestId: number) => {
       const { error } = await supabase
         .from("contacts")
         .delete()
         .eq("id", requestId);
-
       if (error) {
-        return toast.error(`Something went wrong ${error.message}`);
+        toast.error(`Something went wrong: ${error.message}`);
+        throw error;
       }
 
       return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getUsersFriendRequest"] });
     },
   });
 }

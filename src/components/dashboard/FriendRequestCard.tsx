@@ -1,14 +1,17 @@
 import { Button } from "../ui/button";
 import { Check, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useAcceptFriendRequests } from "@/hooks/useQueries";
+import {
+  useAcceptFriendRequests,
+  useRejectFriendRequests,
+} from "@/hooks/useQueries";
 import { useAuth } from "@/context/auth/useAuth";
-import { toast } from "sonner";
+import type { FriendRequest } from "@/types";
 
 function timeAgo(dateString: string) {
-  const now = new Date();
-  const past = new Date(dateString);
-  const diff = Math.floor((now - past) / 1000); // fark saniye cinsinden
+  const now: Date = new Date();
+  const past: Date = new Date(dateString);
+  const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
 
   if (diff < 60) return `${diff} seconds ago`;
   if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
@@ -18,20 +21,33 @@ function timeAgo(dateString: string) {
   if (diff < 31536000) return `${Math.floor(diff / 2592000)} month ago`;
   return `${Math.floor(diff / 31536000)} years ago`;
 }
+type FriendRequestCardProps = {
+  friendRequest: FriendRequest;
+};
 
-export default function NotificationCard({ friendRequest }) {
+export default function FriendRequestCard({
+  friendRequest,
+}: FriendRequestCardProps) {
   const { session } = useAuth();
 
-  const { mutateAsync: acceptFriend, isPending: isPendingAcceptFriend } =
+  const { mutateAsync: acceptFriendRequest, isPending: isPendingAcceptFriend } =
     useAcceptFriendRequests();
+
+  const { mutateAsync: deleteFriendRequest, isPending: isPendingDeleteFriend } =
+    useRejectFriendRequests();
   const { sender } = friendRequest;
 
   async function handleAcceptFriend() {
-    await acceptFriend({
-      contactId: session?.user.id,
+    await acceptFriendRequest({
+      contactId: session?.user.id || "",
       userId: sender.id,
     });
   }
+
+  async function handleDeleteFriendRequest() {
+    await deleteFriendRequest(friendRequest.id);
+  }
+
   return (
     <>
       <div
@@ -39,7 +55,11 @@ export default function NotificationCard({ friendRequest }) {
         className="flex gap-3 p-3 rounded-lg hover:bg-accent transition-colors mb-2"
       >
         <Avatar className="w-12 h-12 shrink-0">
-          <AvatarImage src={sender?.avatar} alt={sender?.name} />
+          <AvatarImage
+            src={sender?.avatar_url ? sender?.avatar_url : undefined}
+            alt={sender?.avatar_url ? sender?.avatar_url : undefined}
+          />
+
           <AvatarFallback>
             {sender.full_name.charAt(0).toUpperCase()}
           </AvatarFallback>
@@ -70,8 +90,8 @@ export default function NotificationCard({ friendRequest }) {
             <Button
               size="sm"
               variant="outline"
-              //   onClick={() => handleReject(request.id, request.name)}
-              //   disabled={isProcessing}
+              onClick={handleDeleteFriendRequest}
+              disabled={isPendingDeleteFriend}
               className="flex-1 cursor-pointer"
             >
               <X className="w-4 h-4 mr-1" />

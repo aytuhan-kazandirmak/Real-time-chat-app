@@ -1,3 +1,5 @@
+import type { Tables } from "@/database.types";
+
 export interface Chat {
   id: string;
   name: string;
@@ -36,12 +38,21 @@ export interface Message {
   timestamp: Date;
   isOwn: boolean;
 }
-export interface Profiles {
-  avatar_url: string | null;
-  created_at: string;
-  email: string;
-  full_name: string;
-  id: string;
-  is_online: boolean;
-  updated_at: string | null;
-}
+// export interface Profiles {
+//   avatar_url: string | null;
+//   created_at: string;
+//   email: string;
+//   full_name: string;
+//   id: string;
+//   is_online: boolean;
+//   updated_at: string | null;
+// }
+
+
+export type Profiles = Pick<Tables<"profiles">,"avatar_url"|"created_at"|"email"|"full_name"|"is_online"|"id">
+
+
+export type FriendRequest=Pick<Tables<"contacts">, "id"|"created_at"|"status"> & {
+  sender: Pick<Tables<'profiles'>, 'id'|'full_name'|"email"|"avatar_url">}
+
+
