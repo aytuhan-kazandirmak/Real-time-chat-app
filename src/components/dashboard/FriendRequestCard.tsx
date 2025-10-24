@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   useAcceptFriendRequests,
   useRejectFriendRequests,
-} from "@/hooks/useQueries";
+} from "@/hooks/useUserQueries";
 import { useAuth } from "@/context/auth/useAuth";
 import type { FriendRequest } from "@/types";
 

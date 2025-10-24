@@ -3,20 +3,62 @@ import { supabase } from "@/supabaseClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useProfilesQuery(id: string) {
+
+
+export function useGetSingleUserWithId(id:string){
+return useQuery({
+  queryKey:["getSingleUserWithId",id],
+  enabled: !!id,
+  queryFn: async()=>{
+
+    const {data, error} = await supabase.from("profiles").select("*").eq("id",id)
+
+    if(error){
+      console.error("getUnfriendedProfiles contacts", error);
+    return [];
+    }
+
+    return data
+  }
+})
+}
+
+
+
+export function useDiscoverFriendsQuery(id: string) {
   return useQuery({
     queryKey: ["getProfiles"],
     queryFn: async () => {
-      const { data: profiles, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .neq("id", id);
+    const { data: contacts, error: contactError } = await supabase
+    .from("contacts")
+    .select("contact_id, user_id")
+    .or(`user_id.eq.${id},contact_id.eq.${id}`);
 
-      if (error) {
-        return console.error("useQuery", error);
-      }
+  if (contactError) {
+    console.error("getUnfriendedProfiles contacts", contactError);
+    return [];
+  }
 
-      return profiles;
+  // Benimle bağlantılı (arkadaş olan) kullanıcı ID'lerini bul
+  const connectedIds = contacts
+    ? contacts.map((c) => (c.user_id === id ? c.contact_id : c.user_id))
+    : [];
+
+  // Kendimi de hariç tut
+  connectedIds.push(id);
+
+  // Artık bu ID’lerin dışındaki profilleri çek
+  const { data: discoverFriends, error: profilesError } = await supabase
+    .from("profiles")
+    .select("*")
+    .not("id", "in", `(${connectedIds.join(",")})`);
+
+  if (profilesError) {
+    console.error("getUnfriendedProfiles profiles", profilesError);
+    return [];
+  }
+
+  return discoverFriends;
     },
   });
 }

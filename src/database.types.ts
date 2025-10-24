@@ -14,32 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
-      chat_messages: {
+      chat_participants: {
         Row: {
-          chat_id: string
-          from_user_id: string
-          message_id: number
-          message_text: string
-          sent_time: string
-          to_user_id: string
+          chat_id: number
+          created_at: string
+          id: number
+          user_id: string | null
         }
         Insert: {
-          chat_id?: string
-          from_user_id: string
-          message_id?: number
-          message_text: string
-          sent_time?: string
-          to_user_id: string
+          chat_id: number
+          created_at?: string
+          id?: number
+          user_id?: string | null
         }
         Update: {
-          chat_id?: string
-          from_user_id?: string
-          message_id?: number
-          message_text?: string
-          sent_time?: string
-          to_user_id?: string
+          chat_id?: number
+          created_at?: string
+          id?: number
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["chat_id"]
+          },
+          {
+            foreignKeyName: "chat_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chats: {
         Row: {
@@ -95,6 +104,45 @@ export type Database = {
           {
             foreignKeyName: "contacts_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          chat_id: number | null
+          content: string
+          created_at: string
+          id: number
+          sender_id: string | null
+        }
+        Insert: {
+          chat_id?: number | null
+          content: string
+          created_at?: string
+          id?: number
+          sender_id?: string | null
+        }
+        Update: {
+          chat_id?: number | null
+          content?: string
+          created_at?: string
+          id?: number
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["chat_id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

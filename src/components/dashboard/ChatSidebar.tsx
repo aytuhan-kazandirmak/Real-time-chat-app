@@ -1,4 +1,11 @@
-import { Bell, MessageSquare, Search } from "lucide-react";
+import {
+  Bell,
+  MessageSquare,
+  MessageSquareText,
+  Search,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { Input } from "../ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -9,24 +16,31 @@ import { mockChats, mockUser } from "@/mocks";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/context/auth/useAuth";
-import { useGetFriendRequest, useGetFriends } from "@/hooks/useQueries";
+import {
+  useDiscoverFriendsQuery,
+  useGetFriendRequest,
+  useGetFriends,
+} from "@/hooks/useUserQueries";
 import { Badge } from "../ui/badge";
 import FriendRequestCard from "./FriendRequestCard";
+import DiscoverUserCard from "./DiscoverUserCard";
+import { useGetChatsWithId } from "@/hooks/useChatQueries";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<
-    "chats" | "friends" | "notifications"
+    "chats" | "friends" | "notifications" | "discover"
   >("chats");
 
   const { session } = useAuth();
+
+  const { data: userChatRooms } = useGetChatsWithId(session?.user.id || "");
   const { data: friendRequests } = useGetFriendRequest(session?.user.id || ""); // Icerde bos id durumunu handle et
   const { data: friendList } = useGetFriends(session?.user.id);
-  console.log("friend list", friendList);
-  // const { data: profiles } = useProfilesQuery(session?.user.id);
-
-  console.log("friendRequests", friendRequests);
-
+  const { data: discoverFriends } = useDiscoverFriendsQuery(
+    session?.user.id || ""
+  );
+  console.log("userChats", userChatRooms);
   return (
     <div className="w-full md:w-80 min-h-screen border-r bg-background relative">
       {/* search input */}
@@ -50,29 +64,42 @@ export default function ChatSidebar() {
         <button
           onClick={() => setActiveTab("chats")}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors",
+            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors flex justify-center items-center",
             activeTab === "chats"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground cursor-pointer"
           )}
         >
-          Chats
+          <MessageSquareText />
         </button>
         <button
           onClick={() => setActiveTab("friends")}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors",
+            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors flex justify-center items-center",
             activeTab === "friends"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground cursor-pointer"
           )}
         >
-          Friends
+          <Users />
         </button>
+
+        <button
+          onClick={() => setActiveTab("discover")}
+          className={cn(
+            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors flex justify-center items-center",
+            activeTab === "discover"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground cursor-pointer"
+          )}
+        >
+          <UserPlus />
+        </button>
+
         <button
           onClick={() => setActiveTab("notifications")}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors relative",
+            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors relative flex justify-center items-center",
             activeTab === "notifications"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -92,10 +119,20 @@ export default function ChatSidebar() {
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-[450px]">
           {activeTab === "chats" ? (
-            mockChats.map((chat) => <ChatCard key={chat.id} chat={chat} />)
+            <div className="flex flex-col gap-2">
+              {mockChats.map((chat) => (
+                <ChatCard key={chat.id} chat={chat} />
+              ))}{" "}
+            </div>
           ) : activeTab === "friends" ? (
             friendList?.map((friend) => (
               <FriendCard key={friend.id} friend={friend} />
+            ))
+          ) : activeTab === "discover" ? (
+            discoverFriends?.map((discoverFriend) => (
+              <div className="p-2" key={discoverFriend.id}>
+                <DiscoverUserCard user={discoverFriend} />
+              </div>
             ))
           ) : (
             <div className="p-2">

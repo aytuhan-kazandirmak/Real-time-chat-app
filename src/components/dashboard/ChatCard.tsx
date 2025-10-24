@@ -14,21 +14,22 @@ export default function ChatCard({ chat }: ChatCardProps) {
     <Link
       to="/$chatRoom"
       className={cn(
-        "w-full p-3 rounded-lg text-left hover:bg-accent transition-colors mb-1"
+        "w-full min-h-20 rounded-lg text-left hover:bg-accent transition-colors"
       )}
       params={{
         chatRoom: chat.id,
       }}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 p-2">
         <div className="relative">
           <Avatar className="w-12 h-12">
             <AvatarImage src={chat.avatar} alt={chat.name} />
             <AvatarFallback>{chat.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
-          {chat.isOnline && (
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
-          )}
+
+          <div
+            className={`${chat.isOnline ? "bg-green-500" : "bg-gray-500"} absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-background rounded-full`}
+          />
         </div>
 
         <div className="flex-1 min-w-0">

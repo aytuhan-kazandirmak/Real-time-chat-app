@@ -1,5 +1,4 @@
-import ChatRoom from "@/components/dashboard/ChatRoom";
-import { mockChats, mockMessages } from "@/mocks";
+import { useGetChatMessages } from "@/hooks/useChatQueries";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/$chatRoom")({
@@ -13,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/$chatRoom")({
 
 function RouteComponent() {
   const { chatRoomId } = Route.useLoaderData();
-  const filteredChat = mockChats.filter((chat) => chat.id === chatRoomId);
-
-  return <ChatRoom chat={filteredChat} messages={mockMessages} />;
+  const { data: messages } = useGetChatMessages(chatRoomId);
+  console.log("messages", messages);
+  return <div></div>;
 }
