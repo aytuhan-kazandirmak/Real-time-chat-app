@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatCard from "./ChatCard";
 import FriendCard from "./FriendCard";
-import { mockChats, mockUser } from "@/mocks";
-import { Button } from "../ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+// import { mockChats, mockUser } from "@/mocks";
+// import { Button } from "../ui/button";
+// import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/context/auth/useAuth";
 import {
   useDiscoverFriendsQuery,
@@ -35,16 +35,16 @@ export default function ChatSidebar() {
   const { session } = useAuth();
 
   const { data: userChatRooms } = useGetChatsWithId(session?.user.id || "");
-  const { data: friendRequests } = useGetFriendRequest(session?.user.id || ""); // Icerde bos id durumunu handle et
+  const { data: friendRequests } = useGetFriendRequest(session?.user.id || "");
   const { data: friendList } = useGetFriends(session?.user.id);
   const { data: discoverFriends } = useDiscoverFriendsQuery(
     session?.user.id || ""
   );
   console.log("userChats", userChatRooms);
   return (
-    <div className="w-full md:w-80 min-h-screen border-r bg-background relative">
+    <div className="w-full md:w-96 min-h-screen border-r bg-background relative">
       {/* search input */}
-      <div className="p-4 border-b">
+      <div className="p-4 border-b flex-1">
         <div className="flex items-center gap-2 mb-4">
           <MessageSquare />
           <h2 className="font-semibold">Messages</h2>
@@ -60,7 +60,7 @@ export default function ChatSidebar() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center border-b">
+      <div className="flex justify-between items-center border-b flex-1">
         <button
           onClick={() => setActiveTab("chats")}
           className={cn(
@@ -120,14 +120,16 @@ export default function ChatSidebar() {
         <ScrollArea className="h-[450px]">
           {activeTab === "chats" ? (
             <div className="flex flex-col gap-2">
-              {mockChats.map((chat) => (
-                <ChatCard key={chat.id} chat={chat} />
-              ))}{" "}
+              {userChatRooms?.map((chat) => (
+                <ChatCard key={chat.chat_id} chat={chat} />
+              ))}
             </div>
           ) : activeTab === "friends" ? (
-            friendList?.map((friend) => (
-              <FriendCard key={friend.id} friend={friend} />
-            ))
+            <div className="flex flex-col gap-2">
+              {friendList?.map((friend) => (
+                <FriendCard key={friend.id} friend={friend} />
+              ))}
+            </div>
           ) : activeTab === "discover" ? (
             discoverFriends?.map((discoverFriend) => (
               <div className="p-2" key={discoverFriend.id}>
@@ -147,7 +149,7 @@ export default function ChatSidebar() {
         </ScrollArea>
       </div>
 
-      <div className="px-3 fixed bottom-0 w-full h-[84px] border-t">
+      {/* <div className="px-3 fixed bottom-0 w-full h-[84px] border-t">
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 h-auto p-3"
@@ -167,7 +169,7 @@ export default function ChatSidebar() {
             </p>
           </div>
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

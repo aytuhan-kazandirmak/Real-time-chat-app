@@ -1,5 +1,5 @@
 import { supabase } from "@/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export function useGetChatsWithId(userId: string) {
   return useQuery({
@@ -22,6 +22,7 @@ export function useGetChatsWithId(userId: string) {
   .select(`
     chat_id,
     created_at,
+    last_message_id,
     chat_participants!inner(
       user_id,
       profiles(full_name, avatar_url, is_online)
@@ -40,7 +41,7 @@ export function useGetChatsWithId(userId: string) {
 }
 
 
-export function useGetChatMessages (chatId:string){
+export function useGetChatMessages (chatId:number){
 
   return useQuery({
     queryKey:["getChatMessages",chatId],
@@ -69,3 +70,10 @@ export function useGetChatMessages (chatId:string){
   })
 
 }
+
+
+export function useSendMessage (){
+  return useMutation({
+    mutationFn:async()=>{}
+  })
+} 

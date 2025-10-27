@@ -1,57 +1,65 @@
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import type { Message } from "@/types";
+
+import type { ChatMessage } from "@/types";
+import { useAuth } from "@/context/auth/useAuth";
+import { timeAgo } from "@/utils/text";
 
 type ChatMessageProps = {
-  message: Message;
+  message: ChatMessage;
 };
 
 export default function ChatMessage({ message }: ChatMessageProps) {
+  const { session } = useAuth();
+  const isOwn = session?.user.id === message.sender_id;
   return (
     <div
       className={cn(
         "flex gap-3 max-w-xs",
-        message.isOwn ? "ml-auto flex-row-reverse" : "mr-auto"
+        isOwn ? "ml-auto mr-4 flex-row-reverse" : "mr-auto ml-4"
       )}
     >
-      {!message.isOwn && (
+      {/* {!isOwn && (
         <Avatar className="w-8 h-8 flex-shrink-0">
-          <AvatarImage src={message.sender.avatar} alt={message.sender.name} />
+          <AvatarImage
+            src={message.profiles?.avatar_url || ""}
+            alt={message.profiles?.full_name}
+          />
           <AvatarFallback>
-            {message.sender.name.charAt(0).toUpperCase()}
+            {message.profiles?.full_name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-      )}
+      )} */}
 
       <div
         className={cn(
           "flex flex-col gap-1",
-          message.isOwn ? "items-end" : "items-start"
+          isOwn ? "items-end" : "items-start"
         )}
       >
-        {!message.isOwn && (
+        {/* {!isOwn && (
           <span className="text-sm text-muted-foreground px-1">
-            {message.sender.name}
+            {message.profiles?.full_name}
           </span>
-        )}
+        )} */}
 
         <div
           className={cn(
             "rounded-2xl px-4 py-2 max-w-full break-words",
-            message.isOwn
-              ? "bg-primary text-primary-foreground rounded-br-md"
-              : "bg-muted text-foreground rounded-bl-md"
+            isOwn
+              ? "bg-primary text-primary-foreground rounded-br-md mt-2"
+              : "bg-muted text-foreground rounded-bl-md mt-4"
           )}
         >
           {message.content}
+          <div
+            className={cn(
+              "text-xs mt-1 opacity-70",
+              isOwn ? "text-primary-foreground" : "text-muted-foreground"
+            )}
+          >
+            {timeAgo(message.created_at)}
+          </div>
         </div>
-
-        <span className="text-xs text-muted-foreground px-1">
-          {message.timestamp.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </span>
       </div>
     </div>
   );

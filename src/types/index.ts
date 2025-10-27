@@ -55,4 +55,17 @@ export type Profiles = Pick<Tables<"profiles">,"avatar_url"|"created_at"|"email"
 export type FriendRequest=Pick<Tables<"contacts">, "id"|"created_at"|"status"> & {
   sender: Pick<Tables<'profiles'>, 'id'|'full_name'|"email"|"avatar_url">}
 
+export type ChatRoom = Pick<Tables<"chats">, "chat_id" | "last_message_id" | "created_at"> & {
+  chat_participants: Array<
+    Pick<Tables<"chat_participants">, "user_id"> & {
+      profiles: Pick<Tables<"profiles">, "full_name" | "avatar_url" | "is_online"> | null;
+    }
+  >;
+};
 
+export type ChatMessage = Pick<
+  Tables<"messages">,
+  "chat_id" | "content" | "created_at" | "sender_id" | "id"
+> & {
+  profiles: Pick<Tables<"profiles">, "full_name" | "avatar_url"> | null;
+};
