@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 import type { ChatMessage } from "@/types";
 import { useAuth } from "@/context/auth/useAuth";
-import { timeAgo } from "@/utils/text";
+import { CheckCheck } from "lucide-react";
 
 type ChatMessageProps = {
   message: ChatMessage;
@@ -51,13 +51,23 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           )}
         >
           {message.content}
-          <div
-            className={cn(
-              "text-xs mt-1 opacity-70",
-              isOwn ? "text-primary-foreground" : "text-muted-foreground"
-            )}
-          >
-            {timeAgo(message.created_at)}
+          <div className="flex justify-between gap-4">
+            <div
+              className={cn(
+                "text-xs mt-1 opacity-70",
+                isOwn ? "text-primary-foreground" : "text-muted-foreground"
+              )}
+            >
+              {new Date(message.created_at).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+            <div>
+              {/* <Check />
+              <CheckCheck /> */}
+              <CheckCheck className="text-blue-400" size={16} />
+            </div>
           </div>
         </div>
       </div>

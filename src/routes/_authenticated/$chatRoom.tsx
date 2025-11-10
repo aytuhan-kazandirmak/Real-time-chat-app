@@ -1,7 +1,8 @@
 import ChatMessage from "@/components/dashboard/ChatMessage";
 import ChatForm from "@/components/form/ChatForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetChatMessages } from "@/hooks/useChatQueries";
+import { useAuth } from "@/context/auth/useAuth";
+import { useGetChatDetails, useGetChatMessages } from "@/hooks/useChatQueries";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
@@ -15,9 +16,13 @@ export const Route = createFileRoute("/_authenticated/$chatRoom")({
 
 function RouteComponent() {
   const { chatRoomId } = Route.useLoaderData();
+  const { session } = useAuth();
   const { data: messages } = useGetChatMessages(chatRoomId);
-  console.log("messages", messages);
-
+  const { data: chatDetails } = useGetChatDetails(
+    chatRoomId,
+    session?.user.id || ""
+  );
+  console.log("chatDetails", chatDetails?.chat_participants[0].is_typing);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -36,13 +41,33 @@ function RouteComponent() {
             {messages?.map((message) => (
               <ChatMessage message={message} />
             ))}
+            {chatDetails?.chat_participants[0].is_typing && (
+              <div className="flex items-center gap-2 text-sm text-green-400 italic pl-4">
+                <div className="flex gap-1">
+                  <span
+                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                    style={{ animationDelay: "0ms" }}
+                  />
+                  <span
+                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <span
+                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                    style={{ animationDelay: "300ms" }}
+                  />
+                </div>
+                <span>typing...</span>
+              </div>
+            )}
+
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
       </div>
 
       <div className="flex-shrink-0">
-        <ChatForm />
+        <ChatForm roomId={chatRoomId} />
       </div>
     </div>
   );

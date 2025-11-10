@@ -19,18 +19,21 @@ export type Database = {
           chat_id: number
           created_at: string
           id: number
+          is_typing: boolean
           user_id: string | null
         }
         Insert: {
           chat_id: number
           created_at?: string
           id?: number
+          is_typing?: boolean
           user_id?: string | null
         }
         Update: {
           chat_id?: number
           created_at?: string
           id?: number
+          is_typing?: boolean
           user_id?: string | null
         }
         Relationships: [

@@ -2,7 +2,7 @@ import type { ChatRoom } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { timeAgo } from "@/utils/text";
+import { isActive, timeAgo } from "@/utils/text";
 
 type ChatCardProps = {
   chat: ChatRoom;
@@ -34,14 +34,33 @@ export default function ChatCard({ chat }: ChatCardProps) {
           </Avatar>
 
           <div
-            className={`${chat.chat_participants[0].profiles?.is_online ? "bg-green-500" : "bg-gray-500"} absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-background rounded-full`}
+            className={`${isActive(chat.chat_participants[0].profiles?.updated_at) ? "bg-green-500" : "bg-gray-500"} absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-background rounded-full`}
           />
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex justify-between mb-1">
             <h4 className="font-medium truncate">
               {chat.chat_participants[0].profiles?.full_name}
+              {chat.chat_participants[0].is_typing && (
+                <div className="flex items-center gap-2 text-sm text-green-400 italic">
+                  <div className="flex gap-1">
+                    <span
+                      className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                      style={{ animationDelay: "0ms" }}
+                    />
+                    <span
+                      className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                      style={{ animationDelay: "150ms" }}
+                    />
+                    <span
+                      className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                      style={{ animationDelay: "300ms" }}
+                    />
+                  </div>
+                  <span>typing...</span>
+                </div>
+              )}
             </h4>
             <span className="text-xs text-muted-foreground">
               {timeAgo(chat.created_at)}
