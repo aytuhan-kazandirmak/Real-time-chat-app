@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-
 import type { ChatMessage } from "@/types";
 import { useAuth } from "@/context/auth/useAuth";
 import { CheckCheck } from "lucide-react";
@@ -11,6 +10,7 @@ type ChatMessageProps = {
 export default function ChatMessage({ message }: ChatMessageProps) {
   const { session } = useAuth();
   const isOwn = session?.user.id === message.sender_id;
+
   return (
     <div
       className={cn(
@@ -65,9 +65,14 @@ export default function ChatMessage({ message }: ChatMessageProps) {
             </div>
             {isOwn && (
               <div>
+                {message.is_read ? (
+                  <CheckCheck className="text-blue-400" size={16} />
+                ) : (
+                  <CheckCheck size={16} />
+                )}
                 {/* <Check />
+                
               <CheckCheck /> */}
-                <CheckCheck className="text-blue-400" size={16} />
               </div>
             )}
           </div>

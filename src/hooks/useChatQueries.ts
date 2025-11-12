@@ -5,7 +5,6 @@ import { useEffect } from "react";
 
 
 
-
 export function useGetChatsWithId(userId: string) {
   const queryClient = useQueryClient();
 
@@ -13,7 +12,6 @@ export function useGetChatsWithId(userId: string) {
     queryKey: ["getChatWithUserId", userId],
     enabled: !!userId,
     queryFn: async () => {
-      // 1️⃣ Kullanıcının içinde bulunduğu chat id'lerini al
       const { data: userChats, error: userChatsError } = await supabase
         .from("chat_participants")
         .select("chat_id")
@@ -23,7 +21,6 @@ export function useGetChatsWithId(userId: string) {
 
       const chatIds = userChats.map((c) => c.chat_id);
 
-      // 2️⃣ Chat detaylarını al
       const { data, error } = await supabase
         .from("chats")
         .select(`
@@ -32,6 +29,8 @@ export function useGetChatsWithId(userId: string) {
           last_message_id,
           last_message_content,
           last_message_created_at,
+          last_message_sender_id,
+          last_message_is_read,
           chat_participants!inner(
             user_id,
             profiles(full_name, avatar_url, is_online, updated_at),
@@ -40,146 +39,132 @@ export function useGetChatsWithId(userId: string) {
         `)
         .in("chat_id", chatIds)
         .neq("chat_participants.user_id", userId)
-        .order("last_message_created_at", { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      return data as ChatRoom[];
+      return data;
     },
   });
 
-  const chatIds = query.data?.map((c) => `'${c.chat_id}'`).join(",") ?? "";
+const chatIds = query.data?.map(c => c.chat_id).join(",") ?? "";
 
-  // 3️⃣ Realtime dinleyiciler
-  useEffect(() => {
-    if (!userId || !chatIds) return;
+useEffect(() => {
+  if (!userId || !chatIds) return;
 
-    const channel = supabase
-      .channel(`user-chats-${userId}`)
-      // ✅ CHATS tablosu: son mesaj güncellenince yakala
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "chats",
-          filter: `chat_id=in.(${chatIds})`,
-        },
-        (payload) => {
-          queryClient.setQueryData<ChatRoom[]>(
-            ["getChatWithUserId", userId],
-            (oldData) => {
-              if (!oldData) return [payload.new as ChatRoom];
+  const channel = supabase
+    .channel(`user-chats-${userId}`)
+    // chats tablosu için
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "chats",
+        filter: `chat_id=in.(${chatIds})`,
+      },
+      (payload) => {
+        queryClient.setQueryData<ChatRoom[]>(
+          ["getChatWithUserId", userId],
+          (oldData) => {
+          
+            if (!oldData) return [payload.new as ChatRoom];
+           return oldData.map((chat) => {
+  if (chat.chat_id !== (payload.new as ChatRoom).chat_id) return chat;
 
-              const updated = oldData.map((chat) =>
-                chat.chat_id === (payload.new as ChatRoom).chat_id
-                  ? { ...chat, ...payload.new } // merge safely
-                  : chat
-              );
+  return {
+    ...chat,
+    last_message_id: payload.new.last_message_id,
+    last_message_content: payload.new.last_message_content,
+    last_message_created_at: payload.new.last_message_created_at,
+    last_message_sender_id: payload.new.last_message_sender_id,
+    last_message_is_read: payload.new.last_message_is_read,
+    chat_participants: chat.chat_participants, // eski katılımcıları koru
+  };
+});
+          }
+        );
+      }
+    )
 
-              // 🧠 son mesaj geldiğinde listenin en üstüne taşı
-              updated.sort(
-                (a, b) =>
-                  new Date(b.last_message_created_at || b.created_at).getTime() -
-                  new Date(a.last_message_created_at || a.created_at).getTime()
-              );
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "chat_participants",
+        filter: `chat_id=in.(${chatIds})`,
+      },
+      (payload) => {
+        queryClient.setQueryData<ChatRoom[]>(
+          ["getChatWithUserId", userId],
+          (oldData) => {
+            if (!oldData) return oldData;
+            return oldData.map((chat) => {
+              if (chat.chat_id !== (payload.new as ChatRoom).chat_id) return chat;
 
-              return updated;
-            }
-          );
-        }
-      )
-
-      // ✅ CHAT_PARTICIPANTS tablosu (ör: is_typing)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "chat_participants",
-          filter: `chat_id=in.(${chatIds})`,
-        },
-        (payload) => {
-          queryClient.setQueryData<ChatRoom[]>(
-            ["getChatWithUserId", userId],
-            (oldData) => {
-              if (!oldData) return oldData;
-              return oldData.map((chat) => {
-                if (chat.chat_id !== (payload.new as any).chat_id) return chat;
-
-                return {
-                  ...chat,
-                  chat_participants: chat.chat_participants.map((p) =>
-                    p.user_id === (payload.new as any).user_id
-                      ? { ...p, is_typing: (payload.new as any).is_typing }
-                      : p
-                  ),
-                };
-              });
-            }
-          );
-        }
-      )
-
-      // ✅ PROFILES tablosu (ör: online/offline durumu)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "profiles",
-        },
-        (payload) => {
-          queryClient.setQueryData<ChatRoom[]>(
-            ["getChatWithUserId", userId],
-            (oldData) => {
-              if (!oldData) return oldData;
-
-              const updatedProfile = payload.new;
-
-              return oldData.map((chat) => ({
+              return {
                 ...chat,
-                chat_participants: chat.chat_participants.map((p) =>
-                  p.user_id === updatedProfile.id
-                    ? {
-                        ...p,
-                        profiles: {
-                          ...p.profiles,
-                          is_online:
-                            updatedProfile.is_online ??
-                            p.profiles?.is_online ??
-                            false,
-                          updated_at:
-                            updatedProfile.updated_at ??
-                            p.profiles?.updated_at ??
-                            null,
-                          full_name:
-                            updatedProfile.full_name ??
-                            p.profiles?.full_name ??
-                            "",
-                          avatar_url:
-                            updatedProfile.avatar_url ??
-                            p.profiles?.avatar_url ??
-                            null,
-                        },
-                      }
+                chat_participants: chat?.chat_participants?.map((p) =>
+                  p.user_id === (payload.new as any).user_id
+                    ? { ...p, is_typing: (payload.new as any).is_typing }
                     : p
                 ),
-              }));
-            }
-          );
-        }
-      )
-      .subscribe();
+              };
+            });
+          }
+        );
+      }
+    )
+    // profiles tablosu için (online/offline ve updated_at)
+.on(
+  "postgres_changes",
+  {
+    event: "UPDATE",
+    schema: "public",
+    table: "profiles",
+  },
+  (payload) => {
+ 
+    
+    queryClient.setQueryData<ChatRoom[]>(
+  ["getChatWithUserId", userId],
+  (oldData) => {
+    if (!oldData) return oldData;
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId, chatIds, queryClient]);
+    const updatedProfile = payload.new;
+
+    return oldData.map((chat) => ({
+      ...chat,
+      chat_participants: chat?.chat_participants?.map((p) =>
+        p.user_id === updatedProfile.id
+          ? {
+              ...p,
+              profiles: {
+                ...p.profiles,
+                is_online: updatedProfile.is_online ?? p.profiles?.is_online ?? false,
+                updated_at: updatedProfile.updated_at ?? p.profiles?.updated_at ?? null,
+                full_name: updatedProfile.full_name ?? p.profiles?.full_name ?? "",
+                avatar_url: updatedProfile.avatar_url ?? p.profiles?.avatar_url ?? null,
+              },
+            }
+          : p
+      ),
+    }));
+  }
+);
+
+  }
+)
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [userId, chatIds, queryClient]);
 
   return query;
 }
-
 
 export function useGetChatDetails(chatId: number, currentUserId: string) {
   const queryClient = useQueryClient();
@@ -234,7 +219,7 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
           if (!oldData) return oldData;
           return {
             ...oldData,
-            chat_participants: oldData.chat_participants.map((p: any) =>
+            chat_participants: oldData?.chat_participants?.map((p: any) =>
               p.user_id === payload.new.user_id ? { ...p, is_typing: payload.new.is_typing } : p
             ),
           };
@@ -251,7 +236,7 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
           if (!oldData) return oldData;
           return {
             ...oldData,
-            chat_participants: oldData.chat_participants.map((p: any) =>
+            chat_participants: oldData?.chat_participants?.map((p: any) =>
               p.user_id === payload.new.id
                 ? {
                     ...p,
@@ -283,9 +268,6 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
 }
 
 
-
-
-
 export function useGetChatMessages(chatId: number) {
   const queryClient = useQueryClient();
 
@@ -302,6 +284,7 @@ export function useGetChatMessages(chatId: number) {
           created_at,
           chat_id,
           sender_id,
+          is_read,
           profiles!inner (
             full_name,
             avatar_url
@@ -318,41 +301,57 @@ export function useGetChatMessages(chatId: number) {
   });
 
   // 2️⃣ Realtime dinleyici (React Query cache güncelleme)
-  useEffect(() => {
-    if (!chatId) return;
+useEffect(() => {
+  if (!chatId) return;
 
-    const channel = supabase
-      .channel(`chat-room-${chatId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `chat_id=eq.${chatId}`,
-        },
-        (payload) => {
-          const newMessage = payload.new;
+  const channel = supabase
+    .channel(`chat-room-${chatId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "messages",
+        filter: `chat_id=eq.${chatId}`,
+      },
+      (payload) => {
+        queryClient.setQueryData(["getChatMessages", chatId], (oldData: ChatMessage[] = []) => {
+          const newMessage = payload.new as ChatMessage;
+          const oldMessage = payload.old as ChatMessage;
 
-          // 3️⃣ Cache'e ekle
-          queryClient.setQueryData(["getChatMessages", chatId], (oldData: ChatMessage[]) =>
-            oldData ? [...oldData, newMessage] : [newMessage]
-          );
-        }
-      )
-      .subscribe();
+          switch (payload.eventType) {
+            case "INSERT":
+              // yeni mesaj eklendi
+              return [...oldData, newMessage];
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [chatId, queryClient]);
+            case "UPDATE":
+              // is_read veya content değiştiyse güncelle
+              return oldData.map((msg) =>
+                msg.id === newMessage.id ? { ...msg, ...newMessage } : msg
+              );
+
+            case "DELETE":
+              // mesaj silindiyse çıkar
+              return oldData.filter((msg) => msg.id !== oldMessage.id);
+
+            default:
+              return oldData;
+          }
+        });
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [chatId, queryClient]);
 
   return query;
 }
 
 
 export function useSendMessage (){
-  const queryClient = useQueryClient()
   return useMutation({
     mutationFn:async(payload:{content:string; chat_id:number;sender_id:string})=>{
 
@@ -369,12 +368,7 @@ export function useSendMessage (){
         console.log("useSendMessage", error)
       }
     },
-    onSuccess:()=>{
-      queryClient.invalidateQueries({
-        queryKey:["getChatWithUserId"]
-      })
 
-    }
   })
 } 
 
@@ -413,4 +407,26 @@ export function useSetTypingStatus(){
     return data;
   }
  })
+}
+
+export function useMarkMessagesAsRead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (chatId: number) => {
+      const { error } = await supabase
+        .from("messages")
+        .update({ is_read: true })
+        .eq("chat_id", chatId)
+        .eq("is_read", false);
+
+      if (error) throw error;
+    },
+    onSuccess: (_, chatId) => {
+      // Cache’teki mesajları da güncelle
+      queryClient.setQueryData(["getChatMessages", chatId], (oldData: any[] = []) =>
+        oldData.map((msg) => ({ ...msg, is_read: true }))
+      );
+    },
+  });
 }

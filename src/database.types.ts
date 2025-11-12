@@ -60,6 +60,8 @@ export type Database = {
           last_message_content: string | null
           last_message_created_at: string | null
           last_message_id: number | null
+          last_message_is_read: boolean | null
+          last_message_sender_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -68,6 +70,8 @@ export type Database = {
           last_message_content?: string | null
           last_message_created_at?: string | null
           last_message_id?: number | null
+          last_message_is_read?: boolean | null
+          last_message_sender_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -76,6 +80,8 @@ export type Database = {
           last_message_content?: string | null
           last_message_created_at?: string | null
           last_message_id?: number | null
+          last_message_is_read?: boolean | null
+          last_message_sender_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -133,6 +139,7 @@ export type Database = {
           content: string
           created_at: string
           id: number
+          is_read: boolean
           sender_id: string | null
         }
         Insert: {
@@ -140,6 +147,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: number
+          is_read?: boolean
           sender_id?: string | null
         }
         Update: {
@@ -147,6 +155,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: number
+          is_read?: boolean
           sender_id?: string | null
         }
         Relationships: [

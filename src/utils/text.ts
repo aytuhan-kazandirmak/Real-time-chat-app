@@ -1,11 +1,13 @@
-export default function truncateText(text: string) {
+export default function truncateText(text: string |null) {
+  if(text ===null) return ""
   if (text.length < 30) return text;
 
   return text.slice(0, 30) + "...";
 }
 
 
- export function timeAgo(dateString: string) {
+ export function timeAgo(dateString: string | null) {
+    if(dateString ===null) return ""
   const now: Date = new Date();
   const past: Date = new Date(dateString);
   const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
