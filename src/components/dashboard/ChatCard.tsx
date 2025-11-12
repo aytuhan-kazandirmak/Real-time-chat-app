@@ -42,7 +42,7 @@ export default function ChatCard({ chat }: ChatCardProps) {
           <div className="flex justify-between mb-1">
             <h4 className="font-medium truncate">
               {chat.chat_participants[0].profiles?.full_name}
-              {chat.chat_participants[0].is_typing && (
+              {chat.chat_participants[0].is_typing ? (
                 <div className="flex items-center gap-2 text-sm text-green-400 italic">
                   <div className="flex gap-1">
                     <span
@@ -59,6 +59,10 @@ export default function ChatCard({ chat }: ChatCardProps) {
                     />
                   </div>
                   <span>typing...</span>
+                </div>
+              ) : (
+                <div className="text-sm font-thin text-gray-300">
+                  {chat.last_message_content}
                 </div>
               )}
             </h4>

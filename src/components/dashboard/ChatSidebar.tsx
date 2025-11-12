@@ -120,9 +120,13 @@ export default function ChatSidebar() {
         <ScrollArea className="h-[450px]">
           {activeTab === "chats" ? (
             <div className="flex flex-col gap-2">
-              {userChatRooms?.map((chat) => (
-                <ChatCard key={chat.chat_id} chat={chat} />
-              ))}
+              {userChatRooms && userChatRooms.length > 0 ? (
+                userChatRooms.map((chat) => (
+                  <ChatCard key={chat.chat_id} chat={chat} />
+                ))
+              ) : (
+                <p>No chats yet</p>
+              )}
             </div>
           ) : activeTab === "friends" ? (
             <div className="flex flex-col gap-2">

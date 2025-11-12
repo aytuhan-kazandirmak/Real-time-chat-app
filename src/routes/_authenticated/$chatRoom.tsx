@@ -22,7 +22,7 @@ function RouteComponent() {
     chatRoomId,
     session?.user.id || ""
   );
-  console.log("chatDetails", chatDetails?.chat_participants[0].is_typing);
+  // console.log("chatDetails", chatDetails?.chat_participants[0].is_typing);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -41,7 +41,7 @@ function RouteComponent() {
             {messages?.map((message) => (
               <ChatMessage message={message} />
             ))}
-            {chatDetails?.chat_participants[0].is_typing && (
+            {chatDetails?.chat_participants?.[0].is_typing && (
               <div className="flex items-center gap-2 text-sm text-green-400 italic pl-4">
                 <div className="flex gap-1">
                   <span

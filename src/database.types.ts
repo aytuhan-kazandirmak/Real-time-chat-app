@@ -57,22 +57,36 @@ export type Database = {
         Row: {
           chat_id: number
           created_at: string
+          last_message_content: string | null
+          last_message_created_at: string | null
           last_message_id: number | null
           updated_at: string | null
         }
         Insert: {
           chat_id?: number
           created_at?: string
+          last_message_content?: string | null
+          last_message_created_at?: string | null
           last_message_id?: number | null
           updated_at?: string | null
         }
         Update: {
           chat_id?: number
           created_at?: string
+          last_message_content?: string | null
+          last_message_created_at?: string | null
           last_message_id?: number | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chats_last_message_id_fkey"
+            columns: ["last_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contacts: {
         Row: {

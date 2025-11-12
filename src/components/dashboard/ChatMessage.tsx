@@ -63,11 +63,13 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 minute: "2-digit",
               })}
             </div>
-            <div>
-              {/* <Check />
+            {isOwn && (
+              <div>
+                {/* <Check />
               <CheckCheck /> */}
-              <CheckCheck className="text-blue-400" size={16} />
-            </div>
+                <CheckCheck className="text-blue-400" size={16} />
+              </div>
+            )}
           </div>
         </div>
       </div>
