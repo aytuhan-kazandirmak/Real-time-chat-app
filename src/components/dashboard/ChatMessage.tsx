@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/types";
 import { useAuth } from "@/context/auth/useAuth";
-import { CheckCheck } from "lucide-react";
+import { Check, CheckCheck } from "lucide-react";
 
 type ChatMessageProps = {
   message: ChatMessage;
@@ -64,15 +64,19 @@ export default function ChatMessage({ message }: ChatMessageProps) {
               })}
             </div>
             {isOwn && (
-              <div>
+              <div className="flex items-center gap-1 mt-1">
+                {message?.status === "sending" ? (
+                  // ⏳ Gönderiliyor
+                  <Check className="text-gray-400" size={16} />
+                ) : (
+                  message?.status === "sent" || !message?.is_read
+                )}
+
                 {message.is_read ? (
                   <CheckCheck className="text-blue-400" size={16} />
                 ) : (
-                  <CheckCheck size={16} />
+                  <CheckCheck className="text-gray-400" size={16} />
                 )}
-                {/* <Check />
-                
-              <CheckCheck /> */}
               </div>
             )}
           </div>

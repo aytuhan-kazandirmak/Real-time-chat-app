@@ -19,11 +19,6 @@ const localTheme =
 export function ThemeContextProvider({ children }: ThemeContextProviderProps) {
   const [theme, setTheme] = useState<string>(localTheme);
 
-  console.log(
-    "theme",
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
-
   document.documentElement.classList.toggle(
     "dark",
     localStorage.theme === "dark" ||

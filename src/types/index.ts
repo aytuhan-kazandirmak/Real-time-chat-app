@@ -62,10 +62,14 @@ export type ChatRoom = Pick<Tables<"chats">, "chat_id" | "last_message_id" |"las
     }
   >;
 };
+export type ChatParticipantsOnly = ChatRoom["chat_participants"][number];
+
+
 
 export type ChatMessage = Pick<
   Tables<"messages">,
   "chat_id" | "content" | "created_at" | "sender_id" | "id" | "is_read"
 > & {
   profiles: Pick<Tables<"profiles">, "full_name" | "avatar_url"> | null;
+  status?: "sending" | "sent";
 };

@@ -26,14 +26,13 @@ export default function ChatForm({ roomId }: ChatForm) {
   });
   const typingTimeout = useRef<NodeJS.Timeout | null>(null);
   const [isTyping, setIsTyping] = useState(false);
-  const { mutateAsync: sendMessage } = useSendMessage();
+  const sendMessage = useSendMessage(roomId);
   const { session } = useAuth();
   const { mutateAsync: setTypingStatus } = useSetTypingStatus();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
 
     const payload = {
       content: values.message,
@@ -41,14 +40,13 @@ export default function ChatForm({ roomId }: ChatForm) {
       sender_id: session?.user.id || "",
     };
 
-    sendMessage(payload);
+    sendMessage.mutate(payload);
 
     form.reset();
   }
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
-    console.log("value", value);
 
     const payload = {
       roomId,

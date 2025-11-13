@@ -40,7 +40,7 @@ export default function ChatSidebar() {
   const { data: discoverFriends } = useDiscoverFriendsQuery(
     session?.user.id || ""
   );
-  console.log("userChats", userChatRooms);
+
   return (
     <div className="w-full md:w-96 min-h-screen border-r bg-background relative">
       {/* search input */}
