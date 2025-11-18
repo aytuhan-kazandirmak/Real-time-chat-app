@@ -20,11 +20,6 @@ export const Route = createFileRoute("/_authenticated")({
   pendingComponent: () => <div>Loading...</div>,
 });
 
-// ekran belirli bir büyüklüğe gelene kadar sadece sidebar görünecek.
-// yine ekran belirli bir seviyeye gelene kadar outlet görünmeyecek çünkü chatlara tıkladığımda direkt chatın açılması için
-// erkan belirli bir büyüklüğü geçince bu kez hem sidebar hem de chatroom
-// belki context ile ekran boyutunu dağıtıp ihtiyacım olan yerde kullanabilirim.
-
 function AuthenticatedLayout() {
   const { chatRoom } = useParams({ strict: false });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);

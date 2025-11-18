@@ -20,11 +20,17 @@ import {
   useDiscoverFriendsQuery,
   useGetFriendRequest,
   useGetFriends,
+  useGetSingleUserWithId,
 } from "@/hooks/useUserQueries";
 import { Badge } from "../ui/badge";
 import FriendRequestCard from "./FriendRequestCard";
 import DiscoverUserCard from "./DiscoverUserCard";
 import { useGetChatsWithId } from "@/hooks/useChatQueries";
+import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { isActive } from "@/utils/text";
+import { Link } from "@tanstack/react-router";
+import ChatCardSkeleton from "../skeleton/ChatCardSkeleton";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,10 +47,14 @@ export default function ChatSidebar() {
     session?.user.id || ""
   );
 
+  const { data: userDetails } = useGetSingleUserWithId(session?.user.id || "");
+  console.log("userDetailssssssssss", userDetails);
+  const emptyArray = Array.from({ length: 9 });
+
   return (
-    <div className="w-full md:w-96 min-h-screen border-r bg-background relative">
+    <div className="flex flex-col w-full md:w-96 min-h-screen border-r bg-background relative">
       {/* search input */}
-      <div className="p-4 border-b flex-1">
+      <div className="p-4 border-b">
         <div className="flex items-center gap-2 mb-4">
           <MessageSquare />
           <h2 className="font-semibold">Messages</h2>
@@ -60,7 +70,7 @@ export default function ChatSidebar() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center border-b flex-1">
+      <div className="flex justify-between items-center border-b ">
         <button
           onClick={() => setActiveTab("chats")}
           className={cn(
@@ -117,16 +127,16 @@ export default function ChatSidebar() {
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
-        <ScrollArea className="h-[450px]">
+        <ScrollArea className="h-full">
           {activeTab === "chats" ? (
             <div className="flex flex-col gap-2">
-              {userChatRooms && userChatRooms.length > 0 ? (
-                userChatRooms.map((chat) => (
-                  <ChatCard key={chat.chat_id} chat={chat} />
-                ))
-              ) : (
-                <p>No chats yet</p>
-              )}
+              {userChatRooms && userChatRooms.length > 0
+                ? userChatRooms.map((chat) => (
+                    <ChatCard key={chat.chat_id} chat={chat} />
+                  ))
+                : emptyArray.map((_, index) => (
+                    <ChatCardSkeleton key={index} />
+                  ))}
             </div>
           ) : activeTab === "friends" ? (
             <div className="flex flex-col gap-2">
@@ -153,27 +163,38 @@ export default function ChatSidebar() {
         </ScrollArea>
       </div>
 
-      {/* <div className="px-3 fixed bottom-0 w-full h-[84px] border-t">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-3 h-auto p-3"
+      {userDetails ? (
+        <Link
+          className="p-1 sticky bottom-0 left-0 w-full h-[84px] border-t"
+          to={"/profile"}
         >
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={mockUser?.avatar} alt={mockUser?.name} />
-            <AvatarFallback>
-              {mockUser?.name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col items-start">
-            <p className="text-sm font-medium">
-              {session?.user?.user_metadata.full_name}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {session?.user?.user_metadata.email}
-            </p>
-          </div>
-        </Button>
-      </div> */}
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 p-3 h-full"
+          >
+            <div className="relative">
+              <Avatar className="w-12 h-12">
+                <AvatarImage
+                  src={userDetails?.avatar_url || ""}
+                  alt={userDetails?.full_name}
+                />
+                <AvatarFallback>
+                  {userDetails?.full_name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div
+                className={`${isActive(userDetails?.updated_at) ? "bg-green-500" : "bg-gray-500"} absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-background rounded-full`}
+              />
+            </div>
+            <div className="flex flex-col items-start">
+              <p className="text-sm font-medium">{userDetails?.full_name}</p>
+              <p className="text-xs text-muted-foreground">
+                {userDetails?.email}
+              </p>
+            </div>
+          </Button>
+        </Link>
+      ) : null}
     </div>
   );
 }

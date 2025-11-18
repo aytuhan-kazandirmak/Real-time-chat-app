@@ -85,7 +85,7 @@ export default function ChatCard({ chat }: ChatCardProps) {
                 <span>typing...</span>
               </div>
             ) : (
-              <div className="text-sm font-thin text-gray-300 flex items-center justify-between">
+              <div className="text-sm font-thin dark:text-gray-300 text-gray-700 flex items-center justify-between">
                 {chat.last_message_sender_id === session?.user.id ? (
                   <div className="flex items-center gap-2">
                     {truncateText(chat.last_message_content)}

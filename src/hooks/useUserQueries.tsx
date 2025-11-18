@@ -1,25 +1,48 @@
 import { supabase } from "@/supabaseClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 export function useGetSingleUserWithId(id: string) {
-  return useQuery({
+  const queryClient = useQueryClient();
+  const query = useQuery({
     queryKey: ["getSingleUserWithId", id],
     enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", id);
+        .eq("id", id)
+        .single();
 
       if (error) {
         console.error("getUnfriendedProfiles contacts", error);
-        return [];
+        return null;
       }
 
       return data;
     },
   });
+  useEffect(() => {
+    if (!id) return;
+    const channel = supabase.channel("custom-update-channel");
+
+    channel
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles" },
+        (payload) => {
+          queryClient.setQueryData(["getSingleUserWithId", id], payload.new);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, queryClient]);
+
+  return query;
 }
 
 export function useDiscoverFriendsQuery(id: string) {

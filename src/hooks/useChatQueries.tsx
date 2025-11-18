@@ -194,10 +194,14 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
           chat_id,
           created_at,
           last_message_id,
+          last_message_content,
+          last_message_created_at,
+          last_message_sender_id,
+          last_message_is_read,
           chat_participants!inner(
             user_id,
-            is_typing,
-            profiles(full_name, avatar_url, is_online, updated_at)
+            profiles(full_name, avatar_url, is_online, updated_at),
+            is_typing
           )
         `
         )

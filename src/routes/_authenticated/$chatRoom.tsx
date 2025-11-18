@@ -1,3 +1,4 @@
+import ChatHeader from "@/components/dashboard/ChatHeader";
 import ChatMessage from "@/components/dashboard/ChatMessage";
 import ChatForm from "@/components/form/ChatForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -27,6 +28,7 @@ function RouteComponent() {
     chatRoomId,
     session?.user.id || ""
   );
+  console.log("chatDetails", chatDetails);
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +56,10 @@ function RouteComponent() {
 
   return (
     <div className="flex w-full flex-col h-full max-h-screen">
+      <div>
+        <ChatHeader chat={chatDetails} />
+      </div>
+
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full p-4">
           <div className="space-y-4">
