@@ -109,7 +109,7 @@ export default function SignupForm() {
     }
   }
   return (
-    <Card className="max-w-md w-full bg-white">
+    <Card className="max-w-md w-full bg-muted/30">
       <CardHeader>
         <CardTitle className="flex items-center justify-center gap-2">
           <MessageSquare /> <H4>ChatApp</H4>
@@ -234,7 +234,10 @@ export default function SignupForm() {
             </Button>
             <FormDescription className="text-center">
               Already have an account?{" "}
-              <Link to="/login" className="font-bold text-black">
+              <Link
+                to="/login"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign in
               </Link>
             </FormDescription>
