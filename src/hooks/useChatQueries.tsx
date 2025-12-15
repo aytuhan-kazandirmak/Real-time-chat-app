@@ -161,6 +161,8 @@ export function useGetChatsWithId(userId: string) {
                             updatedProfile.avatar_url ??
                             p.profiles?.avatar_url ??
                             null,
+                          email:
+                            updatedProfile.email ?? p.profiles?.email ?? "",
                         },
                       }
                     : p
