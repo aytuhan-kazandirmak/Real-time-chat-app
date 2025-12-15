@@ -31,13 +31,13 @@ export default function ChatCard({ chat }: ChatCardProps) {
     <Link
       to="/$chatRoom"
       className={cn(
-        "w-full min-h-20 rounded-lg text-left hover:bg-accent transition-colors"
+        "w-full min-h-20 flex items-center rounded-lg text-left hover:bg-accent transition-colors"
       )}
       params={{
         chatRoom: String(chat.chat_id),
       }}
     >
-      <div className="flex items-start gap-3 p-2">
+      <div className="flex items-center gap-3 p-2 w-full">
         <div className="relative">
           <Avatar className="w-12 h-12">
             <AvatarImage

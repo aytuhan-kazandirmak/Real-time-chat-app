@@ -32,7 +32,7 @@ export function useGetChatsWithId(userId: string) {
           last_message_is_read,
           chat_participants!inner(
             user_id,
-            profiles(full_name, avatar_url, is_online, updated_at),
+            profiles(full_name, avatar_url, is_online, updated_at, email),
             is_typing
           )
         `
@@ -200,7 +200,7 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
           last_message_is_read,
           chat_participants!inner(
             user_id,
-            profiles(full_name, avatar_url, is_online, updated_at),
+            profiles(full_name, avatar_url, is_online, updated_at, email),
             is_typing
           )
         `

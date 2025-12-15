@@ -240,3 +240,57 @@ export function useRejectFriendRequests() {
     },
   });
 }
+
+type UpdateProfilePayload = {
+  newPayload: {
+    fullName?: string;
+    avatar_url?: string;
+  };
+  userId: string;
+};
+export function useUpdateProfilePhoto() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: UpdateProfilePayload) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update(payload.newPayload)
+        .eq("id", payload.userId);
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      // Cache'i güncelle (opsiyonel ama önerilen)
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (error) => {
+      console.error("Profile update error:", error);
+    },
+  });
+}
+
+export function useUpdateProfileName() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: string) => {
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: payload },
+      });
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      // Cache'i güncelle (opsiyonel ama önerilen)
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      toast.success(`Profile updated successfully!`);
+    },
+    onError: (error) => {
+      console.error("Profile update error:", error);
+    },
+  });
+}

@@ -1,6 +1,8 @@
 import type { ChatRoom } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
+import { ChevronLeft } from "lucide-react";
+import { useCanGoBack, useRouter } from "@tanstack/react-router";
 // import { Button } from "../ui/button";
 // import { LogOut, Moon, Sun } from "lucide-react";
 
@@ -32,11 +34,22 @@ export default function ChatHeader({ chat }: ChatHeaderProps) {
   //   }
   // }
 
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
+
   if (!chat) return null;
 
   return (
     <div className="flex items-center justify-between p-4 border-b bg-background">
       <div className="flex items-center gap-3">
+        {canGoBack ? (
+          <ChevronLeft
+            onClick={() => router.history.back()}
+            className="md:hidden"
+            size={35}
+          />
+        ) : null}
+
         <Avatar className="w-10 h-10">
           <AvatarImage
             src={chat.chat_participants?.[0].profiles?.avatar_url || ""}

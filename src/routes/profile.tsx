@@ -7,12 +7,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/auth/useAuth";
 import { useTheme } from "@/context/theme/useAuth";
+import { useUploadImage } from "@/hooks/useUploadImage";
+import {
+  useGetSingleUserWithId,
+  useUpdateProfileName,
+  useUpdateProfilePhoto,
+} from "@/hooks/useUserQueries";
 import { supabase } from "@/supabaseClient";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createFileRoute,
   redirect,
@@ -20,8 +33,11 @@ import {
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
-import { ArrowLeft, Camera, LogOut, Moon, Sun } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Camera, Loader2, LogOut, Moon, Sun } from "lucide-react";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
@@ -34,13 +50,94 @@ export const Route = createFileRoute("/profile")({
   pendingComponent: () => <div>Loading...</div>,
 });
 
+const formSchema = z.object({
+  full_name: z.string().trim().min(1),
+});
+
 function RouteComponent() {
+  const { session } = useAuth();
+  const { data: profileDetails } = useGetSingleUserWithId(
+    session?.user.id || ""
+  );
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      full_name: profileDetails?.full_name || "",
+    },
+  });
   const { theme, themeChanger } = useTheme();
   const { logout } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const router = useRouter();
   const canGoBack = useCanGoBack();
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mutateAsync: updateProfile, isPending: isUpdating } =
+    useUpdateProfilePhoto();
+  const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
+  const { mutateAsync: updateFullname } = useUpdateProfileName();
+  const handleAvatarChange = () => {
+    fileInputRef.current?.click();
+  };
+
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+
+      const file = event.target.files[0];
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Dosya boyutu 2MB'dan küçük olmalı");
+        return;
+      }
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `avatar-${Date.now()}.${fileExt}`;
+
+      // ÖNEMLİ: Path kullanıcı ID'si ile başlamalı
+      const filePath = `${session?.user.id}/${fileName}`;
+
+      // Upload işlemi
+      uploadImage(
+        { filePath, file },
+        {
+          onSuccess: (data) => {
+            // 2. Yükleme başarılı, UI'ı güncelle
+            setAvatarUrl(data.publicUrl);
+
+            // 3. Database'i güncelle
+            updateProfile(
+              {
+                userId: session?.user.id || "",
+                newPayload: { avatar_url: data.publicUrl },
+              },
+              {
+                onSuccess: () => {
+                  toast.success("Profile picture successfully uploaded!");
+                },
+                onError: (error) => {
+                  toast.error("Something went wrong!" + error.message);
+                },
+              }
+            );
+          },
+          onError: (error) => {
+            toast.error("Something went wrong!" + error.message);
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Upload error:", error);
+    }
+  };
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    updateFullname(values.full_name);
+  };
+
   async function handleLogout() {
     setLoading(true);
     try {
@@ -52,6 +149,7 @@ function RouteComponent() {
       setLoading(false);
     }
   }
+  const isLoading = isUploading || isUpdating;
 
   return (
     <div className="h-screen ">
@@ -108,56 +206,81 @@ function RouteComponent() {
             {/* Avatar */}
             <div className="flex items-center gap-4">
               <div className="relative">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={uploadAvatar}
+                  disabled={isLoading}
+                />
+
                 <Avatar className="w-20 h-20">
-                  <AvatarImage src="asd" alt="Aytuhan Kazandırmak" />
+                  <AvatarImage
+                    src={
+                      avatarUrl ? avatarUrl : profileDetails?.avatar_url || ""
+                    }
+                    alt={profileDetails?.full_name}
+                  />
                   <AvatarFallback className="text-lg">
-                    {/* {user?.name?.charAt(0).toUpperCase()} */}
-                    Aytuhan Kazandırmak
+                    {profileDetails?.full_name?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
+
                 <Button
                   size="icon"
                   variant="secondary"
                   className="absolute -bottom-2 -right-2 rounded-full w-8 h-8"
-                  // onClick={handleAvatarChange}
+                  onClick={handleAvatarChange}
+                  disabled={isLoading}
                 >
-                  <Camera className="w-4 h-4" />
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
               <div>
-                <h3 className="font-medium">Aytuhan Kazandırmak</h3>
+                <h3 className="font-medium">{profileDetails?.full_name}</h3>
               </div>
             </div>
 
             {/* Form Fields */}
             <div className="grid gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  // onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
-                />
-              </div>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <FormField
+                      control={form.control}
+                      name="full_name"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Change Your Fullname</FormLabel>
+                          <FormControl>
+                            <Input
+                              id="name"
+                              {...field}
+                              autoComplete="off"
+                              placeholder="Enter the new fullname"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  // value={email}
-                  // onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                />
+                    <Button
+                      className="mt-4"
+                      type="submit"
+                      // onClick={handleSave} disabled={isLoading}
+                    >
+                      {/* {isLoading ? "Saving..." : "Save Changes"} */}
+                      Save Your Fullname
+                    </Button>
+                  </form>
+                </Form>
               </div>
             </div>
-
-            <Button
-            // onClick={handleSave} disabled={isLoading}
-            >
-              {/* {isLoading ? "Saving..." : "Save Changes"} */}
-              Save Changes
-            </Button>
           </CardContent>
         </Card>
 

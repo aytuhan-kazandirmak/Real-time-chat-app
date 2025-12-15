@@ -28,7 +28,7 @@ function RouteComponent() {
     chatRoomId,
     session?.user.id || ""
   );
-  console.log("chatDetails", chatDetails);
+
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 

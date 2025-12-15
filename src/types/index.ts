@@ -58,7 +58,7 @@ export type FriendRequest=Pick<Tables<"contacts">, "id"|"created_at"|"status"> &
 export type ChatRoom = Pick<Tables<"chats">, "chat_id" | "last_message_id" |"last_message_content"| "last_message_created_at"|"last_message_sender_id"|"last_message_is_read" | "created_at" > & {
   chat_participants: Array<
     Pick<Tables<"chat_participants">, "user_id"| "is_typing"> & {
-      profiles: Pick<Tables<"profiles">, "full_name" | "avatar_url" | "is_online" | "updated_at"> | null;
+      profiles: Pick<Tables<"profiles">, "full_name" | "avatar_url" | "is_online" | "updated_at" | "email"> | null;
     }
   >;
 };

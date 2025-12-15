@@ -19,7 +19,6 @@ import { useAuth } from "@/context/auth/useAuth";
 import {
   useDiscoverFriendsQuery,
   useGetFriendRequest,
-  useGetFriends,
   useGetSingleUserWithId,
 } from "@/hooks/useUserQueries";
 import { Badge } from "../ui/badge";
@@ -39,17 +38,24 @@ export default function ChatSidebar() {
   >("chats");
 
   const { session } = useAuth();
+  console.log(session);
 
-  const { data: userChatRooms } = useGetChatsWithId(session?.user.id || "");
+  const { data: userChatRooms, isLoading: isLoadingChatRooms } =
+    useGetChatsWithId(session?.user.id || "");
   const { data: friendRequests } = useGetFriendRequest(session?.user.id || "");
-  const { data: friendList } = useGetFriends(session?.user.id);
   const { data: discoverFriends } = useDiscoverFriendsQuery(
     session?.user.id || ""
   );
 
   const { data: userDetails } = useGetSingleUserWithId(session?.user.id || "");
-  console.log("userDetailssssssssss", userDetails);
+  console.log("userChatRooms", userChatRooms);
   const emptyArray = Array.from({ length: 9 });
+  const filteredChatList = userChatRooms?.filter(
+    (chat) => chat.last_message_id !== null
+  );
+  // const filteredFriendList = userChatRooms?.filter(
+  //   (chat) => chat.last_message_id === null
+  // );
 
   return (
     <div className="flex flex-col w-full md:w-96 min-h-screen border-r bg-background relative">
@@ -70,7 +76,7 @@ export default function ChatSidebar() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center border-b ">
+      <div className="flex justify-between items-center border-b fixed left-0 right-0 bottom-0 md:static z-10">
         <button
           onClick={() => setActiveTab("chats")}
           className={cn(
@@ -116,7 +122,7 @@ export default function ChatSidebar() {
           )}
         >
           <div className="flex items-center justify-center gap-1">
-            <Bell className="w-4 h-4" />
+            <Bell />
             {friendRequests && friendRequests?.length >= 1 ? (
               <Badge variant="destructive" className="h-5 min-w-5 px-1 text-xs">
                 {friendRequests?.length}
@@ -124,24 +130,39 @@ export default function ChatSidebar() {
             ) : null}
           </div>
         </button>
+        <Link
+          to={"/profile"}
+          className="md:hidden flex-1 px-4 py-3 text-sm font-medium transition-colors relative flex justify-center items-center"
+        >
+          {" "}
+          <Avatar className="w-8 h-8">
+            <AvatarImage
+              src={userDetails?.avatar_url || ""}
+              alt={userDetails?.full_name}
+            />
+            <AvatarFallback>
+              {userDetails?.full_name?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full">
           {activeTab === "chats" ? (
             <div className="flex flex-col gap-2">
-              {userChatRooms && userChatRooms.length > 0
-                ? userChatRooms.map((chat) => (
-                    <ChatCard key={chat.chat_id} chat={chat} />
-                  ))
-                : emptyArray.map((_, index) => (
-                    <ChatCardSkeleton key={index} />
-                  ))}
+              {isLoadingChatRooms
+                ? emptyArray.map((_, index) => <ChatCardSkeleton key={index} />)
+                : filteredChatList && filteredChatList.length > 0
+                  ? filteredChatList.map((chat) => (
+                      <ChatCard key={chat.chat_id} chat={chat} />
+                    ))
+                  : null}
             </div>
           ) : activeTab === "friends" ? (
             <div className="flex flex-col gap-2">
-              {friendList?.map((friend) => (
-                <FriendCard key={friend.id} friend={friend} />
+              {userChatRooms?.map((friend) => (
+                <FriendCard key={friend.chat_id} friend={friend} />
               ))}
             </div>
           ) : activeTab === "discover" ? (
@@ -165,7 +186,7 @@ export default function ChatSidebar() {
 
       {userDetails ? (
         <Link
-          className="p-1 sticky bottom-0 left-0 w-full h-[84px] border-t"
+          className="p-1 sticky bottom-0 left-0 w-full h-[84px] border-t max-md:hidden"
           to={"/profile"}
         >
           <Button
