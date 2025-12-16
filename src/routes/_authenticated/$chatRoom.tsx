@@ -1,7 +1,7 @@
 import ChatHeader from "@/components/dashboard/ChatHeader";
-import ChatMessage from "@/components/dashboard/ChatMessage";
+// import ChatMessage from "@/components/dashboard/ChatMessage";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
+// import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/auth/useAuth";
 import {
   useGetChatDetails,
