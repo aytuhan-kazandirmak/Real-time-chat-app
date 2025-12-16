@@ -8,6 +8,7 @@ import {
   useGetChatMessages,
   useMarkMessagesAsRead,
 } from "@/hooks/useChatQueries";
+import { useViewportHeight } from "@/utils/useViewportHeight";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
@@ -35,6 +36,7 @@ function RouteComponent() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  const viewportHeight = useViewportHeight();
 
   useEffect(() => {
     if (!messages || !session) return;
@@ -55,7 +57,7 @@ function RouteComponent() {
   }, [messages]);
 
   return (
-    <div className="flex w-full flex-col  h-screen">
+    <div className="flex w-full flex-col" style={{ height: viewportHeight }}>
       <div>
         <ChatHeader chat={chatDetails} />
       </div>
