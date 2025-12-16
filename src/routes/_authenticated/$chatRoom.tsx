@@ -67,12 +67,12 @@ function RouteComponent() {
 
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full ">
-          <div className="space-y-4">
+          <div className="space-y-4  relative">
             {messages?.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
             {chatDetails?.chat_participants?.[0].is_typing ? (
-              <div className="flex items-center gap-2 text-sm text-green-400  italic pl-4">
+              <div className="flex items-center gap-2 text-sm text-green-400  italic pl-4 absolute left-0 bottom-0">
                 <div className="flex gap-1">
                   <span
                     className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
