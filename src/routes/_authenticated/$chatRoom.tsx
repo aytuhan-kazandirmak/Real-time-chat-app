@@ -55,7 +55,7 @@ function RouteComponent() {
   }, [messages]);
 
   return (
-    <div className="flex w-full flex-col  h-screen">
+    <div className="flex w-full flex-col  h-dvh">
       <div>
         <ChatHeader chat={chatDetails} />
       </div>
