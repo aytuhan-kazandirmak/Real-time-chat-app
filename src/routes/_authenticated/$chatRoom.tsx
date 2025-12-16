@@ -60,7 +60,7 @@ function RouteComponent() {
   );
 
   return (
-    <div className="flex w-full flex-col h-dvh relative">
+    <div className="flex w-full flex-col screen-mobile relative ">
       <div>
         <ChatHeader chatRoomId={chatRoomId} />
       </div>
@@ -96,7 +96,7 @@ function RouteComponent() {
         </ScrollArea>
       </div>
 
-      <div className="flex-shrink-0 sticky bottom-0 right-0">
+      <div className="sticky bottom-0 right-0">
         <ChatForm roomId={chatRoomId} />
       </div>
     </div>

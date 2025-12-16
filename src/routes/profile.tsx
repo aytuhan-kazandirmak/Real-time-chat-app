@@ -323,7 +323,7 @@ function RouteComponent() {
           variant="outline"
           disabled={loading}
           onClick={handleLogout}
-          className="flex items-center gap-2 w-full"
+          className="hidden max-md:flex items-center gap-2 w-full"
         >
           {loading ? (
             <div className="flex items-center gap-4">
