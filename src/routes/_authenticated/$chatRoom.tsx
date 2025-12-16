@@ -60,7 +60,7 @@ function RouteComponent() {
   );
 
   return (
-    <div className="flex w-full flex-col screen-mobile relative ">
+    <div className="flex w-full flex-col h-svh relative ">
       <div>
         <ChatHeader chatRoomId={chatRoomId} />
       </div>

@@ -118,11 +118,3 @@
     @apply bg-background text-foreground;
   }
 }
-@utility screen-mobile {
-  height: 100dvh;
-}
-
-@utility screen-safe {
-  height: 100vh;
-  height: 100dvh;
-}
