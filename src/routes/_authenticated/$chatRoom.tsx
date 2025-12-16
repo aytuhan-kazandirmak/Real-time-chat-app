@@ -8,7 +8,7 @@ import {
   useGetChatMessages,
   useMarkMessagesAsRead,
 } from "@/hooks/useChatQueries";
-import { useViewportHeight } from "@/utils/useViewportHeight";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
@@ -36,7 +36,6 @@ function RouteComponent() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  const viewportHeight = useViewportHeight();
 
   useEffect(() => {
     if (!messages || !session) return;
@@ -55,21 +54,25 @@ function RouteComponent() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  console.log(
+    "chatDetails?.chat_participants?.[0].is_typing",
+    chatDetails?.chat_participants?.[0].is_typing
+  );
 
   return (
-    <div className="flex w-full flex-col" style={{ height: viewportHeight }}>
+    <div className="flex w-full flex-col h-dvh relative">
       <div>
-        <ChatHeader chat={chatDetails} />
+        <ChatHeader chatRoomId={chatRoomId} />
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
-        <ScrollArea className="h-full p-4">
+        <ScrollArea className="h-full ">
           <div className="space-y-4">
             {messages?.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
-            {chatDetails?.chat_participants?.[0].is_typing && (
-              <div className="flex items-center gap-2 text-sm text-green-400 italic pl-4">
+            {chatDetails?.chat_participants?.[0].is_typing ? (
+              <div className="flex items-center gap-2 text-sm text-green-400  italic pl-4">
                 <div className="flex gap-1">
                   <span
                     className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
@@ -86,14 +89,14 @@ function RouteComponent() {
                 </div>
                 <span>typing...</span>
               </div>
-            )}
+            ) : null}
 
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
       </div>
 
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 sticky bottom-0 right-0">
         <ChatForm roomId={chatRoomId} />
       </div>
     </div>

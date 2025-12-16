@@ -53,9 +53,15 @@ export default function ChatSidebar() {
   const filteredChatList = userChatRooms?.filter(
     (chat) => chat.last_message_id !== null
   );
-  // const filteredFriendList = userChatRooms?.filter(
-  //   (chat) => chat.last_message_id === null
-  // );
+  const sortedChatList = filteredChatList?.slice().sort((a, b) => {
+    // Null kontrolü - mesaj olmayan chatler en alta gitsin
+    if (!a.last_message_created_at && !b.last_message_created_at) return 0;
+    if (!a.last_message_created_at) return 1; // a alta gitsin
+    if (!b.last_message_created_at) return -1; // b alta gitsin
+
+    // En yeni mesaj en üstte
+    return b.last_message_created_at.localeCompare(a.last_message_created_at);
+  });
 
   return (
     <div className="flex flex-col w-full md:w-96 min-h-screen border-r bg-background relative">
@@ -76,11 +82,11 @@ export default function ChatSidebar() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center border-b fixed left-0 right-0 bottom-0 md:static z-10">
+      <div className="flex justify-between items-center border-t md:border-b fixed left-0 right-0 bottom-0 md:static z-10">
         <button
           onClick={() => setActiveTab("chats")}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors flex justify-center items-center",
+            "flex-1 px-4 py-3 text-sm font-medium md:border-b-2 max-md:border-t-2 transition-colors flex justify-center items-center",
             activeTab === "chats"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground cursor-pointer"
@@ -91,7 +97,7 @@ export default function ChatSidebar() {
         <button
           onClick={() => setActiveTab("friends")}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors flex justify-center items-center",
+            "flex-1 px-4 py-3 text-sm font-medium md:border-b-2 max-md:border-t-2 transition-colors flex justify-center items-center",
             activeTab === "friends"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground cursor-pointer"
@@ -103,7 +109,7 @@ export default function ChatSidebar() {
         <button
           onClick={() => setActiveTab("discover")}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors flex justify-center items-center",
+            "flex-1 px-4 py-3 text-sm font-medium md:border-b-2 max-md:border-t-2 transition-colors flex justify-center items-center",
             activeTab === "discover"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground cursor-pointer"
@@ -115,7 +121,7 @@ export default function ChatSidebar() {
         <button
           onClick={() => setActiveTab("notifications")}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors relative flex justify-center items-center",
+            "flex-1 px-4 py-3 text-sm font-medium md:border-b-2 max-md:border-t-2 transition-colors relative flex justify-center items-center",
             activeTab === "notifications"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -147,14 +153,14 @@ export default function ChatSidebar() {
         </Link>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden px-2">
         <ScrollArea className="h-full">
           {activeTab === "chats" ? (
             <div className="flex flex-col gap-2">
               {isLoadingChatRooms
                 ? emptyArray.map((_, index) => <ChatCardSkeleton key={index} />)
-                : filteredChatList && filteredChatList.length > 0
-                  ? filteredChatList.map((chat) => (
+                : sortedChatList && sortedChatList.length > 0
+                  ? sortedChatList.map((chat) => (
                       <ChatCard key={chat.chat_id} chat={chat} />
                     ))
                   : null}

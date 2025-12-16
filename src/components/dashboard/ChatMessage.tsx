@@ -46,7 +46,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           className={cn(
             "rounded-2xl px-4 py-2 max-w-full break-words",
             isOwn
-              ? "bg-primary text-primary-foreground rounded-br-md mt-2"
+              ? "bg-muted-foreground text-primary-foreground rounded-br-md mt-2"
               : "bg-muted text-foreground rounded-bl-md mt-4"
           )}
         >
@@ -73,9 +73,9 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 )}
 
                 {message.is_read ? (
-                  <CheckCheck className="text-blue-400" size={16} />
+                  <CheckCheck className="text-green-700" size={16} />
                 ) : (
-                  <CheckCheck className="text-gray-400" size={16} />
+                  <CheckCheck className="text-gray-800" size={16} />
                 )}
               </div>
             )}

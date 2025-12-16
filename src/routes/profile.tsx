@@ -318,6 +318,23 @@ function RouteComponent() {
             </div>
           </CardContent>
         </Card>
+
+        <Button
+          variant="outline"
+          disabled={loading}
+          onClick={handleLogout}
+          className="flex items-center gap-2 w-full"
+        >
+          {loading ? (
+            <div className="flex items-center gap-4">
+              <Spinner /> Log Out
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <LogOut className="w-4 h-4" /> Log Out
+            </div>
+          )}
+        </Button>
       </div>
     </div>
   );

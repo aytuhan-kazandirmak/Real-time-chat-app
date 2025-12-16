@@ -79,7 +79,7 @@ export default function ChatForm({ roomId }: ChatForm) {
   }
 
   return (
-    <div className="sticky bottom-0 left-0 w-full h-[84px] border-t bg-background flex items-center">
+    <div className=" w-full h-[84px] border-t bg-background flex items-center">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

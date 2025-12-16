@@ -1,8 +1,9 @@
-import type { ChatRoom } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { ChevronLeft } from "lucide-react";
 import { useCanGoBack, useRouter } from "@tanstack/react-router";
+import { useGetChatDetails } from "@/hooks/useChatQueries";
+import { useAuth } from "@/context/auth/useAuth";
 // import { Button } from "../ui/button";
 // import { LogOut, Moon, Sun } from "lucide-react";
 
@@ -13,10 +14,10 @@ import { useCanGoBack, useRouter } from "@tanstack/react-router";
 // import { useTheme } from "@/context/theme/useAuth";
 
 type ChatHeaderProps = {
-  chat: ChatRoom | undefined;
+  chatRoomId: number;
 };
 
-export default function ChatHeader({ chat }: ChatHeaderProps) {
+export default function ChatHeader({ chatRoomId }: ChatHeaderProps) {
   // const { theme, themeChanger } = useTheme();
   // const { logout } = useAuth();
   // const [loading, setLoading] = useState<boolean>(false);
@@ -33,6 +34,8 @@ export default function ChatHeader({ chat }: ChatHeaderProps) {
   //     setLoading(false);
   //   }
   // }
+  const { session } = useAuth();
+  const { data: chat } = useGetChatDetails(chatRoomId, session?.user.id || "");
 
   const router = useRouter();
   const canGoBack = useCanGoBack();
