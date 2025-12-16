@@ -1,6 +1,6 @@
 import ChatHeader from "@/components/dashboard/ChatHeader";
 import ChatMessage from "@/components/dashboard/ChatMessage";
-import ChatForm from "@/components/form/ChatForm";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/auth/useAuth";
 import {
@@ -61,11 +61,10 @@ function RouteComponent() {
 
   return (
     <div className="flex w-full flex-col h-svh relative ">
-      <div>
+      <div className="sticky top-0 right-0 z-10">
         <ChatHeader chatRoomId={chatRoomId} />
       </div>
-
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 bg-red-300 overflow-hidden">
         <ScrollArea className="h-full ">
           <div className="space-y-4  relative">
             {messages?.map((message) => (
@@ -95,10 +94,41 @@ function RouteComponent() {
           </div>
         </ScrollArea>
       </div>
+      <div className="sticky bottom-0 right-0 bg-blue-300 h-[84px]">asd</div>
+      {/* <div className="flex-1 min-h-0 overflow-hidden">
+        <ScrollArea className="h-full ">
+          <div className="space-y-4  relative">
+            {messages?.map((message) => (
+              <ChatMessage key={message.id} message={message} />
+            ))}
+            {chatDetails?.chat_participants?.[0].is_typing ? (
+              <div className="flex items-center gap-2 text-sm text-green-400  italic pl-4 absolute left-0 bottom-0">
+                <div className="flex gap-1">
+                  <span
+                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                    style={{ animationDelay: "0ms" }}
+                  />
+                  <span
+                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <span
+                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
+                    style={{ animationDelay: "300ms" }}
+                  />
+                </div>
+                <span>typing...</span>
+              </div>
+            ) : null}
 
-      <div className="sticky bottom-0 right-0">
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+      </div> */}
+
+      {/* <div className="sticky bottom-0 right-0">
         <ChatForm roomId={chatRoomId} />
-      </div>
+      </div> */}
     </div>
   );
 }
