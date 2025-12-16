@@ -65,7 +65,8 @@ function RouteComponent() {
         <ChatHeader chatRoomId={chatRoomId} />
       </div>
       <div className="flex-1 bg-red-300 overflow-hidden">
-        <ScrollArea className="h-full ">
+        <div className="h-full">asdasds</div>
+        {/* <ScrollArea className="h-full ">
           <div className="space-y-4  relative">
             {messages?.map((message) => (
               <ChatMessage key={message.id} message={message} />
@@ -92,7 +93,7 @@ function RouteComponent() {
 
             <div ref={messagesEndRef} />
           </div>
-        </ScrollArea>
+        </ScrollArea> */}
       </div>
       <div className="sticky bottom-0 right-0 bg-blue-300 h-[84px]">asd</div>
       {/* <div className="flex-1 min-h-0 overflow-hidden">
