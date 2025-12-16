@@ -1,7 +1,7 @@
-import ChatHeader from "@/components/dashboard/ChatHeader";
-// import ChatMessage from "@/components/dashboard/ChatMessage";
+// import ChatHeader from "@/components/dashboard/ChatHeader";
+import ChatMessage from "@/components/dashboard/ChatMessage";
 
-// import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/auth/useAuth";
 import {
   useGetChatDetails,
@@ -61,12 +61,13 @@ function RouteComponent() {
 
   return (
     <div className="flex w-full flex-col h-svh relative ">
-      <div className="sticky top-0 right-0 z-10">
+      {/* <div className="sticky top-0 right-0 z-10">
         <ChatHeader chatRoomId={chatRoomId} />
-      </div>
+      </div> */}
+      <div className="bg-purple-300 h-[79px]">fdgdfg</div>
       <div className="flex-1 bg-red-300 overflow-hidden">
         <div className="h-full">asdasds</div>
-        {/* <ScrollArea className="h-full ">
+        <ScrollArea className="h-full ">
           <div className="space-y-4  relative">
             {messages?.map((message) => (
               <ChatMessage key={message.id} message={message} />
@@ -93,9 +94,9 @@ function RouteComponent() {
 
             <div ref={messagesEndRef} />
           </div>
-        </ScrollArea> */}
+        </ScrollArea>
       </div>
-      <div className="sticky bottom-0 right-0 bg-blue-300 h-[84px]">asd</div>
+      <div className=" bg-blue-300 h-[84px]">asd</div>
       {/* <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full ">
           <div className="space-y-4  relative">
