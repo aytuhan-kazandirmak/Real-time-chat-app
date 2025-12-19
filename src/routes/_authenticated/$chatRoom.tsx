@@ -64,7 +64,6 @@ function RouteComponent() {
       style={{
         height: "100dvh",
         border: "3px solid blue",
-        minHeight: "-webkit-fill-available",
       }}
     >
       {/* <div className="sticky top-0 right-0 z-10">
