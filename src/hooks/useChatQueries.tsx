@@ -559,3 +559,67 @@ export function useMarkMessagesAsRead() {
     },
   });
 }
+
+export function useGetChatParticipantTyping(
+  chatId: number,
+  currentUserId: string
+) {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ["getChatParticipantTyping", chatId],
+    enabled: !!chatId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("chat_participants")
+        .select("user_id, is_typing")
+        .eq("chat_id", chatId)
+        .neq("user_id", currentUserId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    if (!chatId) return;
+
+    const channel = supabase
+      .channel(`participant-typing-${chatId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chat_participants",
+          filter: `chat_id=eq.${chatId}`,
+        },
+        (payload) => {
+          queryClient.setQueryData(
+            ["getChatParticipantTyping", chatId],
+            (oldData: { user_id: string; is_typing: boolean }) => {
+              if (!oldData) return oldData;
+
+              // Sadece karşı tarafın is_typing'i güncellenir
+              if (payload.new.user_id === oldData.user_id) {
+                return {
+                  ...oldData,
+                  is_typing: payload.new.is_typing,
+                };
+              }
+
+              return oldData;
+            }
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [chatId, queryClient]);
+
+  return query;
+}

@@ -1,12 +1,12 @@
 // import ChatHeader from "@/components/dashboard/ChatHeader";
 import ChatHeader from "@/components/dashboard/ChatHeader";
 import ChatMessage from "@/components/dashboard/ChatMessage";
+import TypingInfo from "@/components/dashboard/TypingInfo";
 import ChatForm from "@/components/form/ChatForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { useAuth } from "@/context/auth/useAuth";
 import {
-  useGetChatDetails,
   useGetChatMessages,
   useMarkMessagesAsRead,
 } from "@/hooks/useChatQueries";
@@ -27,10 +27,6 @@ function RouteComponent() {
   const { chatRoomId } = Route.useLoaderData();
   const { session } = useAuth();
   const { data: messages } = useGetChatMessages(chatRoomId);
-  const { data: chatDetails } = useGetChatDetails(
-    chatRoomId,
-    session?.user.id || ""
-  );
 
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -54,26 +50,14 @@ function RouteComponent() {
     }
   }, [messages, chatRoomId, session, messagesAsRead]);
 
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [messages]);
-
   useLayoutEffect(() => {
     if (messages && messages.length > 0) {
       scrollToBottom();
     }
   }, [messages]);
-  console.log(
-    "chatDetails?.chat_participants?.[0].is_typing",
-    chatDetails?.chat_participants?.[0].is_typing
-  );
 
   return (
     <div className="flex w-full flex-col relative overflow-hidden h-dvh">
-      {/* <div className="sticky top-0 right-0 z-10">
-        <ChatHeader chatRoomId={chatRoomId} />
-      </div> */}
-
       <ChatHeader chatRoomId={chatRoomId} />
 
       <div className="flex-1 min-h-0 overflow-hidden">
@@ -82,67 +66,15 @@ function RouteComponent() {
             {messages?.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
-            {chatDetails?.chat_participants?.[0].is_typing ? (
-              <div className="flex items-center gap-2 text-sm text-green-400  italic pl-4 absolute left-0 bottom-0">
-                <div className="flex gap-1">
-                  <span
-                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "0ms" }}
-                  />
-                  <span
-                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "150ms" }}
-                  />
-                  <span
-                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "300ms" }}
-                  />
-                </div>
-                <span>typing...</span>
-              </div>
-            ) : null}
-
+            <div>
+              <TypingInfo chatRoomId={chatRoomId} />
+            </div>
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
       </div>
 
       <ChatForm roomId={chatRoomId} />
-
-      {/* <div className="flex-1 min-h-0 overflow-hidden">
-        <ScrollArea className="h-full ">
-          <div className="space-y-4  relative">
-            {messages?.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
-            {chatDetails?.chat_participants?.[0].is_typing ? (
-              <div className="flex items-center gap-2 text-sm text-green-400  italic pl-4 absolute left-0 bottom-0">
-                <div className="flex gap-1">
-                  <span
-                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "0ms" }}
-                  />
-                  <span
-                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "150ms" }}
-                  />
-                  <span
-                    className="w-2 h-2 bg-green-400/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "300ms" }}
-                  />
-                </div>
-                <span>typing...</span>
-              </div>
-            ) : null}
-
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
-      </div> */}
-
-      {/* <div className="sticky bottom-0 right-0">
-        <ChatForm roomId={chatRoomId} />
-      </div> */}
     </div>
   );
 }
