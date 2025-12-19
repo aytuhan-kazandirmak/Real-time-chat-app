@@ -60,7 +60,7 @@ function RouteComponent() {
   );
 
   return (
-    <div className="flex w-full flex-col h-svh relative ">
+    <div className="flex w-full flex-col h-screen relative ">
       {/* <div className="sticky top-0 right-0 z-10">
         <ChatHeader chatRoomId={chatRoomId} />
       </div> */}
