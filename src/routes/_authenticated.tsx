@@ -31,13 +31,7 @@ function AuthenticatedLayout() {
   }, []);
 
   return (
-    <div
-      className="h-dvh flex"
-      style={{
-        height: "100dvh",
-        border: "3px solid green",
-      }}
-    >
+    <div className="h-dvh flex">
       {isMobile && chatRoom ? null : <ChatSidebar />}
       {!isMobile && !chatRoom ? (
         <div className="w-full  justify-center items-center hidden md:flex">
