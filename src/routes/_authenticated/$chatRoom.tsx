@@ -61,7 +61,11 @@ function RouteComponent() {
   return (
     <div
       className="flex w-full flex-col h-screen relative overflow-hidden"
-      style={{ height: "100dvh", border: "3px solid red" }}
+      style={{
+        height: "100dvh",
+        border: "3px solid red",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
     >
       {/* <div className="sticky top-0 right-0 z-10">
         <ChatHeader chatRoomId={chatRoomId} />
