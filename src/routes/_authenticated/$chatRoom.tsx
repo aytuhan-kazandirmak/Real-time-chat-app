@@ -12,7 +12,7 @@ import {
 } from "@/hooks/useChatQueries";
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 export const Route = createFileRoute("/_authenticated/$chatRoom")({
   component: RouteComponent,
@@ -35,7 +35,9 @@ function RouteComponent() {
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
   };
 
   useEffect(() => {
@@ -52,8 +54,14 @@ function RouteComponent() {
     }
   }, [messages, chatRoomId, session, messagesAsRead]);
 
-  useEffect(() => {
-    scrollToBottom();
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
+
+  useLayoutEffect(() => {
+    if (messages && messages.length > 0) {
+      scrollToBottom();
+    }
   }, [messages]);
   console.log(
     "chatDetails?.chat_participants?.[0].is_typing",
