@@ -60,11 +60,11 @@ function RouteComponent() {
 
   return (
     <div
-      className="flex w-full flex-col h-screen relative overflow-hidden"
+      className="flex w-full flex-col relative overflow-hidden"
       style={{
         height: "100dvh",
-        border: "3px solid red",
-        paddingBottom: "env(safe-area-inset-bottom)",
+        border: "3px solid blue",
+        minHeight: "-webkit-fill-available",
       }}
     >
       {/* <div className="sticky top-0 right-0 z-10">
