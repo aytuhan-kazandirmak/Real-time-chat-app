@@ -43,7 +43,7 @@ export default function ChatHeader({ chatRoomId }: ChatHeaderProps) {
   if (!chat) return null;
 
   return (
-    <div className="flex items-center justify-between p-4 border-b bg-background">
+    <div className="flex items-center justify-between p-4 border-b bg-background h-[79px]">
       <div className="flex items-center gap-3">
         {canGoBack ? (
           <ChevronLeft

@@ -66,9 +66,9 @@ function RouteComponent() {
       {/* <div className="sticky top-0 right-0 z-10">
         <ChatHeader chatRoomId={chatRoomId} />
       </div> */}
-      <div className="bg-purple-300 h-[79px]">
-        <ChatHeader chatRoomId={chatRoomId} />
-      </div>
+
+      <ChatHeader chatRoomId={chatRoomId} />
+
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full ">
           <div className="space-y-4  relative">
@@ -99,9 +99,9 @@ function RouteComponent() {
           </div>
         </ScrollArea>
       </div>
-      <div className=" bg-blue-300 h-[84px]">
-        <ChatForm roomId={chatRoomId} />
-      </div>
+
+      <ChatForm roomId={chatRoomId} />
+
       {/* <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full ">
           <div className="space-y-4  relative">

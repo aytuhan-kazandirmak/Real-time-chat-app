@@ -79,17 +79,17 @@ export default function ChatForm({ roomId }: ChatForm) {
   }
 
   return (
-    <div className="w-full  border-t bg-background flex items-center">
+    <div className="w-full md:border-t bg-background flex items-center h-[84px]">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex items-center gap-2 w-full px-4"
+          className="flex  items-center gap-2 w-full px-4"
         >
           <FormField
             control={form.control}
             name="message"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="flex-1 ">
                 <FormControl onChange={onChange}>
                   <Input
                     autoComplete="off"
