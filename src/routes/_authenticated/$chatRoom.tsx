@@ -65,7 +65,7 @@ function RouteComponent() {
         <ChatHeader chatRoomId={chatRoomId} />
       </div> */}
       <div className="bg-purple-300 h-[79px]">fdgdfg</div>
-      <div className="flex-1 bg-red-300 overflow-hidden">
+      <div className="flex-1 bg-green-300 overflow-hidden">
         <div className="h-full">asdasds</div>
         <ScrollArea className="h-full ">
           <div className="space-y-4  relative">
