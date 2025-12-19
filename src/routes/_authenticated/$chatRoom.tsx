@@ -62,7 +62,7 @@ function RouteComponent() {
     <div
       className="flex w-full flex-col relative overflow-hidden"
       style={{
-        height: "100dvh",
+        height: "100vh",
         border: "3px solid blue",
         minHeight: "-webkit-fill-available",
       }}
