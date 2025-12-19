@@ -62,8 +62,8 @@ function RouteComponent() {
     <div
       className="flex w-full flex-col relative overflow-hidden"
       style={{
-        height: "100svh",
-        border: "3px solid blue",
+        height: "100dvh",
+        border: "3px solid red",
       }}
     >
       {/* <div className="sticky top-0 right-0 z-10">
