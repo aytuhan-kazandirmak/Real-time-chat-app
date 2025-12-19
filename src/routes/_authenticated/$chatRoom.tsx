@@ -61,13 +61,13 @@ function RouteComponent() {
   return (
     <div
       className="flex w-full flex-col h-screen relative overflow-hidden"
-      style={{ height: "100dvh" }}
+      style={{ height: "100dvh", border: "3px solid red" }}
     >
       {/* <div className="sticky top-0 right-0 z-10">
         <ChatHeader chatRoomId={chatRoomId} />
       </div> */}
       <div className="bg-purple-300 h-[79px]">fdgdfg</div>
-      <div className="flex-1 overflow-y-auto bg-green-300">
+      <div className="flex-1 overflow-y-auto bg-green-300 min-h-0">
         <div className="space-y-4 p-4">
           {messages?.map((message) => (
             <ChatMessage key={message.id} message={message} />
