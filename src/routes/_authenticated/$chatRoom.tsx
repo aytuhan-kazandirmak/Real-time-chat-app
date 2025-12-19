@@ -34,7 +34,6 @@ function RouteComponent() {
 
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };

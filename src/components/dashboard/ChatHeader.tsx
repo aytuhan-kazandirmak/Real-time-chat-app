@@ -43,80 +43,48 @@ export default function ChatHeader({ chatRoomId }: ChatHeaderProps) {
   if (!chat) return null;
 
   return (
-    <div className="flex items-center justify-between p-4 border-b bg-background h-[79px]">
-      <div className="flex items-center gap-3">
-        {canGoBack ? (
-          <ChevronLeft
-            onClick={() => router.history.back()}
-            className="md:hidden"
-            size={35}
-          />
-        ) : null}
+    <div className="flex items-center px-4 gap-3 border-b bg-background h-[62px] md:h-[72px]">
+      {canGoBack ? (
+        <ChevronLeft
+          onClick={() => router.history.back()}
+          className="md:hidden"
+          size={35}
+        />
+      ) : null}
 
-        <Avatar className="w-10 h-10">
-          <AvatarImage
-            src={chat.chat_participants?.[0].profiles?.avatar_url || ""}
-            alt={chat.chat_participants?.[0].profiles?.full_name}
-          />
-          <AvatarFallback>
-            {chat.chat_participants?.[0].profiles?.full_name
-              .charAt(0)
-              .toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+      <Avatar className="w-10 h-10">
+        <AvatarImage
+          src={chat.chat_participants?.[0].profiles?.avatar_url || ""}
+          alt={chat.chat_participants?.[0].profiles?.full_name}
+        />
+        <AvatarFallback>
+          {chat.chat_participants?.[0].profiles?.full_name
+            .charAt(0)
+            .toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
 
-        <div className="flex flex-col">
-          <h3 className="font-medium">
-            {chat.chat_participants?.[0].profiles?.full_name}
-          </h3>
-          <div className="flex items-center gap-2">
-            <Badge
-              variant={
-                chat.chat_participants?.[0].profiles?.is_online
-                  ? "default"
-                  : "secondary"
-              }
-              className="text-xs px-2 py-0.5"
-            >
-              {chat.chat_participants?.[0].profiles?.is_online
-                ? "Online"
-                : "Offline"}
-            </Badge>
-            {/* <span className="text-sm text-muted-foreground">
+      <div className="flex flex-col ">
+        <h3 className="font-medium">
+          {chat.chat_participants?.[0].profiles?.full_name}
+        </h3>
+        <div className="flex items-center gap-2">
+          <Badge
+            variant={
+              chat.chat_participants?.[0].profiles?.is_online
+                ? "default"
+                : "secondary"
+            }
+            className="text-xs px-2 py-0.5"
+          >
+            {chat.chat_participants?.[0].profiles?.is_online
+              ? "Online"
+              : "Offline"}
+          </Badge>
+          {/* <span className="text-sm text-muted-foreground">
               {chat.participants} participants
             </span> */}
-          </div>
         </div>
-      </div>
-
-      <div className="flex items-center gap-1">
-        {/* <Button variant="ghost" size="icon">
-          <Phone className="w-4 h-4" />
-        </Button> */}
-        {/* <Button
-          disabled={loading}
-          onClick={handleLogout}
-          variant="ghost"
-          size="icon"
-        >
-          {loading ? <Spinner /> : <LogOut />}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => themeChanger()}
-          className="h-8 w-8 px-0"
-        >
-          {theme === "dark" ? (
-            <Sun className="h-4 w-4" />
-          ) : (
-            <Moon className="h-4 w-4" />
-          )}
-          <span className="sr-only">Toggle theme</span>
-        </Button> */}
-        {/* <Button variant="ghost" size="icon">
-          <MoreVertical className="w-4 h-4" />
-        </Button> */}
       </div>
     </div>
   );

@@ -38,7 +38,6 @@ export default function ChatSidebar() {
   >("chats");
 
   const { session } = useAuth();
-  console.log(session);
 
   const { data: userChatRooms, isLoading: isLoadingChatRooms } =
     useGetChatsWithId(session?.user.id || "");
@@ -48,7 +47,6 @@ export default function ChatSidebar() {
   );
 
   const { data: userDetails } = useGetSingleUserWithId(session?.user.id || "");
-  console.log("userChatRooms", userChatRooms);
   const emptyArray = Array.from({ length: 9 });
   const filteredChatList = userChatRooms?.filter(
     (chat) => chat.last_message_id !== null
@@ -62,14 +60,14 @@ export default function ChatSidebar() {
     // En yeni mesaj en üstte
     return b.last_message_created_at.localeCompare(a.last_message_created_at);
   });
-
+  const sortedChatListLength = sortedChatList?.length || 0;
   return (
-    <div className="flex flex-col w-full md:w-96 min-h-screen border-r bg-background relative">
+    <div className="flex flex-col w-full md:w-96 h-dvh border-r bg-background ">
       {/* search input */}
-      <div className="p-4 border-b">
+      <div className="p-4 md:border-b">
         <div className="flex items-center gap-2 mb-4">
           <MessageSquare />
-          <h2 className="font-semibold">Messages</h2>
+          <h2 className="font-semibold">Typing Dots</h2>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -82,7 +80,7 @@ export default function ChatSidebar() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center border-t md:border-b fixed left-0 right-0 bottom-0 md:static z-10">
+      <div className="flex justify-between items-center md:border-b fixed left-0 right-0 bottom-0 md:static z-10">
         <button
           onClick={() => setActiveTab("chats")}
           className={cn(
@@ -153,18 +151,23 @@ export default function ChatSidebar() {
         </Link>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden px-2">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full">
           {activeTab === "chats" ? (
-            <div className="flex flex-col gap-2">
+            <>
               {isLoadingChatRooms
                 ? emptyArray.map((_, index) => <ChatCardSkeleton key={index} />)
                 : sortedChatList && sortedChatList.length > 0
-                  ? sortedChatList.map((chat) => (
-                      <ChatCard key={chat.chat_id} chat={chat} />
+                  ? sortedChatList.map((chat, index) => (
+                      <ChatCard
+                        key={chat.chat_id}
+                        index={index}
+                        chat={chat}
+                        sortedChatListLength={sortedChatListLength}
+                      />
                     ))
                   : null}
-            </div>
+            </>
           ) : activeTab === "friends" ? (
             <div className="flex flex-col gap-2">
               {userChatRooms?.map((friend) => (
@@ -192,7 +195,7 @@ export default function ChatSidebar() {
 
       {userDetails ? (
         <Link
-          className="p-1 sticky bottom-0 left-0 w-full h-[84px] border-t max-md:hidden"
+          className="p-1 w-full h-[84px] border-t max-md:hidden"
           to={"/profile"}
         >
           <Button

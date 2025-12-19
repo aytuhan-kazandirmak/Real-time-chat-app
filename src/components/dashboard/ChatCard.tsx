@@ -8,12 +8,19 @@ import { CheckCheck } from "lucide-react";
 import { useGetChatMessages } from "@/hooks/useChatQueries";
 import { Badge } from "../ui/badge";
 import { useEffect, useState } from "react";
+import clsx from "clsx";
 
 type ChatCardProps = {
   chat: ChatRoom;
+  index: number;
+  sortedChatListLength: number;
 };
 
-export default function ChatCard({ chat }: ChatCardProps) {
+export default function ChatCard({
+  chat,
+  index,
+  sortedChatListLength,
+}: ChatCardProps) {
   const { session } = useAuth();
   const { data: messages } = useGetChatMessages(chat.chat_id);
 
@@ -31,13 +38,13 @@ export default function ChatCard({ chat }: ChatCardProps) {
     <Link
       to="/$chatRoom"
       className={cn(
-        "w-full min-h-20 flex items-center rounded-lg text-left hover:bg-accent transition-colors"
+        "w-full  flex items-center rounded-lg p-0 h-full text-left hover:bg-accent transition-colors"
       )}
       params={{
         chatRoom: String(chat.chat_id),
       }}
     >
-      <div className="flex items-center gap-3 p-2 w-full">
+      <div className="flex items-center gap-3 w-full px-4">
         <div className="relative">
           <Avatar className="w-12 h-12">
             <AvatarImage
@@ -56,7 +63,14 @@ export default function ChatCard({ chat }: ChatCardProps) {
           />
         </div>
 
-        <div className="flex-1 min-w-0">
+        <div
+          className={clsx(
+            "flex-1 min-w-0 flex flex-col justify-center min-h-[72px]",
+            "max-md:border-t",
+            "md:border-b",
+            index === sortedChatListLength - 1 && "max-md:border-b"
+          )}
+        >
           <div className="flex justify-between mb-1">
             <h4 className="font-medium truncate">
               {chat?.chat_participants?.[0]?.profiles?.full_name}
