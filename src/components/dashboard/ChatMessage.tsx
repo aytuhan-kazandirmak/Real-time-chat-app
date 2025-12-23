@@ -73,7 +73,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 )}
 
                 {message.is_read ? (
-                  <CheckCheck className="text-green-700" size={16} />
+                  <CheckCheck className="text-green-300" size={16} />
                 ) : (
                   <CheckCheck className="text-gray-800" size={16} />
                 )}

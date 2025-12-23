@@ -12,7 +12,13 @@ import {
 } from "@/hooks/useChatQueries";
 
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 export const Route = createFileRoute("/_authenticated/$chatRoom")({
   component: RouteComponent,
@@ -28,6 +34,7 @@ function RouteComponent() {
   const { session } = useAuth();
   const { data: messages } = useGetChatMessages(chatRoomId);
 
+  const [isVisible, setIsVisible] = useState(!document.hidden);
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { chatRoom } = useParams({ strict: false });
@@ -46,18 +53,34 @@ function RouteComponent() {
   }, [messages, scrollToBottom]);
 
   useEffect(() => {
-    if (!messages || !session) return;
+    const handleVisibilityChange = () => {
+      setIsVisible(!document.hidden);
+    };
 
-    // 1️⃣ Eğer yeni mesaj geldiyse ve bu mesaj bana ait değilse
-    const hasUnread = messages.some(
-      (message) => !message.is_read && message.sender_id !== session.user.id
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  // 2️⃣ Kullanıcı chat'teyse VE sayfa görünürse mesajları okundu yap
+  useEffect(() => {
+    if (!messages || !session || !isVisible) return;
+
+    const unreadMessages = messages.filter(
+      (m) => !m.is_read && m.sender_id !== session.user.id
     );
 
-    // 2️⃣ Chat açıkken otomatik okundu say
-    if (hasUnread) {
-      messagesAsRead(chatRoomId);
+    if (unreadMessages.length > 0) {
+      // Debounce ile - çok sık güncelleme olmasın
+      const timeoutId = setTimeout(() => {
+        messagesAsRead(chatRoomId);
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [messages, chatRoomId, session, messagesAsRead]);
+  }, [messages, session, isVisible, chatRoomId, messagesAsRead]);
 
   return (
     <div className="flex w-full flex-col relative overflow-hidden h-dvh">
