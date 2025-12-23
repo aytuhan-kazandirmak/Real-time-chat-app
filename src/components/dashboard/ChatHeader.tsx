@@ -67,6 +67,7 @@ export default function ChatHeader({ chatRoomId }: ChatHeaderProps) {
               Offline
             </Badge>
           )}
+          {/* header da ve is typingde sorun var  */}
 
           {/* <span className="text-sm text-muted-foreground">
               {chat.participants} participants

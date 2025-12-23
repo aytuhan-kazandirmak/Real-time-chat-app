@@ -12,9 +12,6 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatCard from "./ChatCard";
 import FriendCard from "./FriendCard";
-// import { mockChats, mockUser } from "@/mocks";
-// import { Button } from "../ui/button";
-// import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/context/auth/useAuth";
 import {
   useDiscoverFriendsQuery,
@@ -27,6 +24,7 @@ import { useGetChatsWithId } from "@/hooks/useChatQueries";
 
 import ChatCardSkeleton from "../skeleton/ChatCardSkeleton";
 import ProfileCard from "./ProfileCard";
+import ProfileCardMobile from "./ProfileCardMobile";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -130,21 +128,8 @@ export default function ChatSidebar() {
             ) : null}
           </div>
         </button>
-        {/* <Link
-          to={"/profile"}
-          className="md:hidden flex-1 px-4 py-3 text-sm font-medium transition-colors relative flex justify-center items-center"
-        >
-          {" "}
-          <Avatar className="w-8 h-8">
-            <AvatarImage
-              src={userDetails?.avatar_url || ""}
-              alt={userDetails?.full_name}
-            />
-            <AvatarFallback>
-              {userDetails?.full_name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </Link> */}
+
+        <ProfileCardMobile currentUserId={session?.user.id || ""} />
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">

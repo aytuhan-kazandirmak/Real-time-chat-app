@@ -10,7 +10,6 @@ type ProfileCardProps = {
 
 export default function ProfileCard({ currentUserId }: ProfileCardProps) {
   const { data: userDetails } = useGetSingleUserWithId(currentUserId);
-  console.log(userDetails);
 
   return (
     <Link
