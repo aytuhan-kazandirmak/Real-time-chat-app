@@ -12,7 +12,7 @@ import {
 } from "@/hooks/useChatQueries";
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 export const Route = createFileRoute("/_authenticated/$chatRoom")({
   component: RouteComponent,
@@ -30,11 +30,18 @@ function RouteComponent() {
 
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollToBottom = () => {
+
+  const scrollToBottom = useCallback(() => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 200);
-  };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (messages && messages.length > 0) {
+      scrollToBottom();
+    }
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     if (!messages || !session) return;
@@ -50,12 +57,6 @@ function RouteComponent() {
     }
   }, [messages, chatRoomId, session, messagesAsRead]);
 
-  useLayoutEffect(() => {
-    if (messages && messages.length > 0) {
-      scrollToBottom();
-    }
-  }, [messages]);
-
   return (
     <div className="flex w-full flex-col relative overflow-hidden h-dvh">
       <ChatHeader chatRoomId={chatRoomId} />
@@ -67,7 +68,10 @@ function RouteComponent() {
               <ChatMessage key={message.id} message={message} />
             ))}
             <div>
-              <TypingInfo chatRoomId={chatRoomId} />
+              <TypingInfo
+                chatRoomId={chatRoomId}
+                scrollToBottom={scrollToBottom}
+              />
             </div>
             <div ref={messagesEndRef} />
           </div>

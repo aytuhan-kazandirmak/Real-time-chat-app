@@ -1,19 +1,26 @@
 import { useAuth } from "@/context/auth/useAuth";
 import { useGetChatParticipantTyping } from "@/hooks/useChatQueries";
+import { useEffect } from "react";
 
 type TypingInfoProps = {
   chatRoomId: number;
+  scrollToBottom: () => void;
 };
 
-export default function TypingInfo({ chatRoomId }: TypingInfoProps) {
+export default function TypingInfo({
+  chatRoomId,
+  scrollToBottom,
+}: TypingInfoProps) {
   const { session } = useAuth();
 
   const { data: typingData } = useGetChatParticipantTyping(
     chatRoomId,
     session?.user.id || ""
   );
-
   const isTyping = typingData?.is_typing ?? false;
+  useEffect(() => {
+    scrollToBottom();
+  }, [isTyping, scrollToBottom]);
 
   return (
     <>

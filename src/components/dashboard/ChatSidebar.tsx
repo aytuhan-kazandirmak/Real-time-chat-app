@@ -19,17 +19,14 @@ import { useAuth } from "@/context/auth/useAuth";
 import {
   useDiscoverFriendsQuery,
   useGetFriendRequest,
-  useGetSingleUserWithId,
 } from "@/hooks/useUserQueries";
 import { Badge } from "../ui/badge";
 import FriendRequestCard from "./FriendRequestCard";
 import DiscoverUserCard from "./DiscoverUserCard";
 import { useGetChatsWithId } from "@/hooks/useChatQueries";
-import { Button } from "../ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { isActive } from "@/utils/text";
-import { Link } from "@tanstack/react-router";
+
 import ChatCardSkeleton from "../skeleton/ChatCardSkeleton";
+import ProfileCard from "./ProfileCard";
 
 export default function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,7 +43,6 @@ export default function ChatSidebar() {
     session?.user.id || ""
   );
 
-  const { data: userDetails } = useGetSingleUserWithId(session?.user.id || "");
   const emptyArray = Array.from({ length: 9 });
   const filteredChatList = userChatRooms?.filter(
     (chat) => chat.last_message_id !== null
@@ -134,7 +130,7 @@ export default function ChatSidebar() {
             ) : null}
           </div>
         </button>
-        <Link
+        {/* <Link
           to={"/profile"}
           className="md:hidden flex-1 px-4 py-3 text-sm font-medium transition-colors relative flex justify-center items-center"
         >
@@ -148,7 +144,7 @@ export default function ChatSidebar() {
               {userDetails?.full_name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-        </Link>
+        </Link> */}
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
@@ -193,38 +189,7 @@ export default function ChatSidebar() {
         </ScrollArea>
       </div>
 
-      {userDetails ? (
-        <Link
-          className="p-1 w-full h-[84px] border-t max-md:hidden"
-          to={"/profile"}
-        >
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 p-3 h-full"
-          >
-            <div className="relative">
-              <Avatar className="w-12 h-12">
-                <AvatarImage
-                  src={userDetails?.avatar_url || ""}
-                  alt={userDetails?.full_name}
-                />
-                <AvatarFallback>
-                  {userDetails?.full_name?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div
-                className={`${isActive(userDetails?.updated_at) ? "bg-green-500" : "bg-gray-500"} absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-background rounded-full`}
-              />
-            </div>
-            <div className="flex flex-col items-start">
-              <p className="text-sm font-medium">{userDetails?.full_name}</p>
-              <p className="text-xs text-muted-foreground">
-                {userDetails?.email}
-              </p>
-            </div>
-          </Button>
-        </Link>
-      ) : null}
+      <ProfileCard currentUserId={session?.user.id || ""} />
     </div>
   );
 }

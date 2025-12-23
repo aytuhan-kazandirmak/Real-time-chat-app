@@ -32,6 +32,8 @@ export function useGetSingleUserWithId(id: string) {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "profiles" },
         (payload) => {
+          if (payload.new.id !== id) return;
+
           queryClient.setQueryData(["getSingleUserWithId", id], payload.new);
         }
       )

@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { useCanGoBack, useRouter } from "@tanstack/react-router";
 import { useGetChatDetails } from "@/hooks/useChatQueries";
 import { useAuth } from "@/context/auth/useAuth";
+import { isActive } from "@/utils/text";
 // import { Button } from "../ui/button";
 // import { LogOut, Moon, Sun } from "lucide-react";
 
@@ -18,22 +19,6 @@ type ChatHeaderProps = {
 };
 
 export default function ChatHeader({ chatRoomId }: ChatHeaderProps) {
-  // const { theme, themeChanger } = useTheme();
-  // const { logout } = useAuth();
-  // const [loading, setLoading] = useState<boolean>(false);
-  // const navigate = useNavigate();
-
-  // async function handleLogout() {
-  //   setLoading(true);
-  //   try {
-  //     await logout();
-  //     navigate({ to: "/login" });
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
   const { session } = useAuth();
   const { data: chat } = useGetChatDetails(chatRoomId, session?.user.id || "");
 
@@ -41,6 +26,7 @@ export default function ChatHeader({ chatRoomId }: ChatHeaderProps) {
   const canGoBack = useCanGoBack();
 
   if (!chat) return null;
+  console.log("online?", chat);
 
   return (
     <div className="flex items-center px-4 gap-3 border-b bg-background h-[62px] md:h-[72px]">
@@ -69,18 +55,19 @@ export default function ChatHeader({ chatRoomId }: ChatHeaderProps) {
           {chat.chat_participants?.[0].profiles?.full_name}
         </h3>
         <div className="flex items-center gap-2">
-          <Badge
-            variant={
-              chat.chat_participants?.[0].profiles?.is_online
-                ? "default"
-                : "secondary"
-            }
-            className="text-xs px-2 py-0.5"
-          >
-            {chat.chat_participants?.[0].profiles?.is_online
-              ? "Online"
-              : "Offline"}
-          </Badge>
+          {isActive(chat?.chat_participants?.[0]?.profiles?.updated_at) ? (
+            <Badge
+              variant={"default"}
+              className="text-xs px-2 py-0.5 bg-green-700 text-white"
+            >
+              Online
+            </Badge>
+          ) : (
+            <Badge variant={"secondary"} className="text-xs px-2 py-0.5 ">
+              Offline
+            </Badge>
+          )}
+
           {/* <span className="text-sm text-muted-foreground">
               {chat.participants} participants
             </span> */}
