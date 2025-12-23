@@ -185,7 +185,6 @@ export function useGetChatsWithId(userId: string) {
 export function useGetChatDetails(chatId: number, currentUserId: string) {
   const queryClient = useQueryClient();
 
-  // 1️⃣ Normal fetch
   const query = useQuery({
     queryKey: ["getChatDetails", chatId],
     queryFn: async () => {
@@ -217,13 +216,12 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
     enabled: !!chatId,
   });
 
-  // 2️⃣ Realtime subscription
   useEffect(() => {
     if (!chatId) return;
 
     const channel = supabase.channel(`chat-details-${chatId}`);
 
-    // chats tablosu
+    // ✅ chats tablosu - SADECE chat alanlarını güncelle
     channel.on(
       "postgres_changes",
       {
@@ -233,7 +231,23 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
         filter: `chat_id=eq.${chatId}`,
       },
       (payload) => {
-        queryClient.setQueryData(["getChatDetails", chatId], payload.new);
+        queryClient.setQueryData(
+          ["getChatDetails", chatId],
+          (oldData: ChatRoom) => {
+            if (!oldData) return oldData;
+
+            // ✅ Sadece chat alanlarını güncelle, participants'ı koru
+            return {
+              ...oldData,
+              last_message_id: payload.new.last_message_id,
+              last_message_content: payload.new.last_message_content,
+              last_message_created_at: payload.new.last_message_created_at,
+              last_message_sender_id: payload.new.last_message_sender_id,
+              last_message_is_read: payload.new.last_message_is_read,
+              // chat_participants: oldData.chat_participants ← Otomatik korunuyor
+            };
+          }
+        );
       }
     );
 
@@ -299,6 +313,7 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
                             payload.new.avatar_url ??
                             p.profiles?.avatar_url ??
                             null,
+                          email: payload.new.email ?? p.profiles?.email ?? "",
                         },
                       }
                     : p
@@ -309,10 +324,8 @@ export function useGetChatDetails(chatId: number, currentUserId: string) {
       }
     );
 
-    // subscribe
     channel.subscribe();
 
-    // ❌ cleanup artık senkron
     return () => {
       supabase.removeChannel(channel);
     };

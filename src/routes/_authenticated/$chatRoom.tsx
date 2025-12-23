@@ -11,7 +11,7 @@ import {
   useMarkMessagesAsRead,
 } from "@/hooks/useChatQueries";
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 export const Route = createFileRoute("/_authenticated/$chatRoom")({
@@ -30,6 +30,8 @@ function RouteComponent() {
 
   const { mutateAsync: messagesAsRead } = useMarkMessagesAsRead();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { chatRoom } = useParams({ strict: false });
+  console.log("chatRoom", chatRoom);
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
@@ -48,7 +50,7 @@ function RouteComponent() {
 
     // 1️⃣ Eğer yeni mesaj geldiyse ve bu mesaj bana ait değilse
     const hasUnread = messages.some(
-      (m) => !m.is_read && m.sender_id !== session.user.id
+      (message) => !message.is_read && message.sender_id !== session.user.id
     );
 
     // 2️⃣ Chat açıkken otomatik okundu say
