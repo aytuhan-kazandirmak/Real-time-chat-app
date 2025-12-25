@@ -10,12 +10,9 @@ import {
 import { MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
   beforeLoad: async () => {
-    await delay(3000);
     const { data } = await supabase.auth.getSession();
 
     if (!data.session) {
