@@ -1,4 +1,5 @@
 import ChatSidebar from "@/components/dashboard/ChatSidebar";
+import LoadingSpinner from "@/components/skeleton/LoadingSpinner";
 import { supabase } from "@/supabaseClient";
 import {
   createFileRoute,
@@ -9,15 +10,19 @@ import {
 import { MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
   beforeLoad: async () => {
+    await delay(3000);
     const { data } = await supabase.auth.getSession();
+
     if (!data.session) {
       throw redirect({ to: "/login" });
     }
   },
-  pendingComponent: () => <div>Loading...</div>,
+  pendingComponent: () => <LoadingSpinner />,
 });
 
 function AuthenticatedLayout() {
